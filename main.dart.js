@@ -55802,8 +55802,8 @@ V:function(a,b){var s,r,q,p=null,o=T.om(p,48,p)
 L.af5(b,C.Tu,t.iM).toString
 s=L.m3(T.aak("Showcase",p,"showcase",H.a([],t.J),p),K.aY(b).ah.b,C.cK,p)
 r=T.om(p,48,p)
-q=Math.max(1,C.c.cZ(Math.min(b.ab(t.l).f.a.a/400,1000)))
-return M.ag9(new P.D(4291648604),E.agf(T.zI(H.a([o,s,r,T.qC(new T.fL(new S.av(0,1000,0,1/0),new B.Cz(new B.a0q(q,0,0,1.4),new G.a0l(new N.a6o(this),2,!0,!0,!0),p,C.o,!1,p,!0,C.rF,!0,p,2,C.bq,C.OM,p,C.aJ,p),p),p,p)],t.E),C.bQ,C.cz)))}}
+q=Math.max(1,C.c.cZ(Math.min(b.ab(t.l).f.a.a,1000)/350))
+return M.ag9(new P.D(4291648604),E.agf(T.zI(H.a([o,s,r,T.qC(new T.fL(new S.av(0,1000,0,1/0),new B.Cz(new B.a0q(q,0,0,1.2),new G.a0l(new N.a6o(this),2,!0,!0,!0),p,C.o,!1,p,!0,C.rF,!0,p,2,C.bq,C.OM,p,C.aJ,p),p),p,p)],t.E),C.bQ,C.cz)))}}
 N.a6o.prototype={
 $2:function(a,b){return new N.lU(this.a.d[b],null)},
 $C:"$2",
