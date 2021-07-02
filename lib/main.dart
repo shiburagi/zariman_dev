@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:me/pages/me.dart';
-import 'package:routes/routes.dart';
 import 'package:localize/localize.dart';
+import 'package:me/pages/me.dart';
+import 'package:personal_website/app.dart';
+import 'package:routes/routes.dart';
 import 'package:showcase/showcase.dart';
 
 void main() {
@@ -34,10 +35,13 @@ class MyApp extends StatelessWidget {
       canvasColor: Colors.black,
       cardColor: Colors.grey.shade900,
     );
+    final GlobalKey<NavigatorState> parentNavKey = GlobalKey();
     final GlobalKey<NavigatorState> key = GlobalKey();
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Flutter Demo',
+      navigatorObservers: [NavigatorObserver()],
+      navigatorKey: parentNavKey,
       localizationsDelegates: [
         S.delegate,
         GlobalMaterialLocalizations.delegate,
@@ -54,30 +58,7 @@ class MyApp extends StatelessWidget {
         };
         return Stack(
           children: [
-            MaterialApp(
-              localizationsDelegates: [
-                S.delegate,
-                GlobalMaterialLocalizations.delegate,
-                GlobalWidgetsLocalizations.delegate,
-                GlobalCupertinoLocalizations.delegate,
-              ],
-              supportedLocales: S.delegate.supportedLocales,
-              navigatorKey: key,
-              debugShowCheckedModeBanner: false,
-              title: 'Hi, I\'m Muhammad Norzariman',
-              theme: theme,
-              onGenerateRoute: (settings) {
-                Future.delayed(Duration.zero, () {
-                  controller.update(settings.name ?? "");
-                });
-
-                return MaterialPageRoute(
-                  builder: (context) {
-                    return routes[settings.name]!(context);
-                  },
-                );
-              },
-            ),
+            AppPage(controller: controller),
             Positioned(
               left: 8,
               top: 8,
@@ -129,8 +110,10 @@ class _CardMenuState extends State<CardMenu> {
             return IconButton(
                 onPressed: isActive
                     ? null
-                    : () =>
-                        widget.navKey.currentState?.pushReplacementNamed(e.key),
+                    : () {
+                        print(e.key);
+                        widget.controller.currentRoute = (e.key);
+                      },
                 icon: Icon(
                   e.value.icon,
                   color: isActive ? Theme.of(context).accentColor : null,
@@ -145,11 +128,16 @@ class _CardMenuState extends State<CardMenu> {
 class CardMenuController {
   StateSetter? _setter;
 
-  String currentRoute = "";
+  String _currentRoute = "/";
+  String get currentRoute => _currentRoute;
 
-  update(String currentRoute) {
-    _setter?.call(() {
-      this.currentRoute = currentRoute;
-    });
+  ValueChanged<String>? onChanged;
+
+  set currentRoute(String currentRoute) {
+    if (currentRoute != this._currentRoute)
+      _setter?.call(() {
+        onChanged?.call(currentRoute);
+        this._currentRoute = currentRoute;
+      });
   }
 }
