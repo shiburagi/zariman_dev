@@ -33,7 +33,7 @@ class MyApp extends StatelessWidget {
       accentColor: Color(0xffE74C3C),
       primarySwatch: Colors.blue,
       canvasColor: Colors.black,
-      cardColor: Colors.grey.shade900,
+      cardColor: Colors.blueGrey.shade900,
     );
     final GlobalKey<NavigatorState> parentNavKey = GlobalKey();
     final GlobalKey<NavigatorState> key = GlobalKey();

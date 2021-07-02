@@ -5,6 +5,7 @@ import 'package:me/me.dart';
 import 'package:personal_website/main.dart';
 import 'package:routes/routes.dart';
 import 'package:showcase/showcase.dart';
+import 'package:utils/utils.dart';
 
 final List<WidgetBuilder> _pages = [
   (context) => Container(
@@ -33,6 +34,8 @@ class _AppPageState extends State<AppPage> with TickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
+
+    bool isAnimated = false;
     animationController = AnimationController(
         vsync: this,
         duration: Duration(milliseconds: 200),
@@ -51,19 +54,20 @@ class _AppPageState extends State<AppPage> with TickerProviderStateMixin {
       animationController.value = percent;
       animations[0].value = percent.clamp(0.0, 1.0);
       animations[1].value = percent.clamp(0, 0);
-
-      if (percent == 0) {
+      if (!isAnimated) if (percent < 1) {
         widget.controller.currentRoute = RoutePath.me;
-      } else if (percent == 1) {
+      } else {
         widget.controller.currentRoute = RoutePath.showcase;
       }
     });
 
-    widget.controller.onChanged = (value) {
-      scrollController.animateTo(
+    widget.controller.onChanged = (value) async {
+      isAnimated = true;
+      await scrollController.animateTo(
           value == RoutePath.me ? 0 : MediaQuery.of(context).size.height,
           duration: Duration(milliseconds: 500),
           curve: Curves.easeInOut);
+      isAnimated = false;
     };
   }
 
@@ -72,6 +76,13 @@ class _AppPageState extends State<AppPage> with TickerProviderStateMixin {
     super.didChangeDependencies();
   }
 
+  double get sectionFontSize => context.isMd ? 120 : 80;
+  List<Color> progressColor = [
+    Colors.red.shade700,
+    Colors.orange,
+    Colors.yellow,
+    Colors.green
+  ];
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
@@ -83,7 +94,7 @@ class _AppPageState extends State<AppPage> with TickerProviderStateMixin {
               child: AnimatedBuilder(
             animation: animations[0],
             builder: (context, child) => Container(
-              color: Colors.red.shade800.withOpacity(animations[0].value),
+              color: Color(0xffC0392B).withOpacity(animations[0].value),
             ),
           )),
           AnimatedBuilder(
@@ -109,14 +120,51 @@ class _AppPageState extends State<AppPage> with TickerProviderStateMixin {
                 double curveValue =
                     Curves.easeInOut.transform(animations[0].value);
                 return Positioned(
-                  right: 32 + width * curveValue * 0.2,
-                  top: -80 + curveValue * height,
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  top: 0,
                   child: Opacity(
-                    opacity: (1 - curveValue - 0.5).clamp(0, 1),
-                    child: Text(
-                      "World!".toUpperCase(),
-                      textAlign: TextAlign.right,
-                      style: TextStyle(fontSize: 120, height: 1),
+                    opacity: curveValue < 0.6
+                        ? 1
+                        : (1 - (curveValue - 0.6) * 4).clamp(0, 1),
+                    child: Center(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Card(
+                            elevation: 0,
+                            clipBehavior: Clip.antiAliasWithSaveLayer,
+                            color: Colors.transparent,
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(16),
+                                side: BorderSide(
+                                    color: Theme.of(context)
+                                        .hintColor
+                                        .withOpacity(1))),
+                            child: ConstrainedBox(
+                              constraints: BoxConstraints(maxWidth: 400),
+                              child: Transform(
+                                transform: Matrix4.diagonal3Values(
+                                    (curveValue * 2).clamp(0, 1), 1.0, 1.0),
+                                child: Container(
+                                  height: 16,
+                                  color: progressColor[
+                                      (curveValue * 2 * progressColor.length)
+                                          .floor()
+                                          .clamp(0, progressColor.length - 1)],
+                                ),
+                              ),
+                            ),
+                          ),
+                          Text(
+                            curveValue >= 0.5
+                                ? "Completed".toUpperCase()
+                                : "${(curveValue * 200).clamp(0, 100).toStringAsFixed(1)}%",
+                            style: Theme.of(context).textTheme.headline6,
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 );
@@ -127,14 +175,22 @@ class _AppPageState extends State<AppPage> with TickerProviderStateMixin {
                 double curveValue =
                     Curves.easeInOut.transform(animations[0].value);
                 return Positioned(
-                  right: 32 + width * curveValue * 0.2,
-                  top: 32 + curveValue * height,
+                  right: 32, // + width * curveValue * 0.2,
+                  top: -108 + curveValue * height,
                   child: Opacity(
                     opacity: (1 - curveValue * 2).clamp(0, 1),
-                    child: Text(
-                      "_Hello".toUpperCase(),
+                    child: Text.rich(
+                      TextSpan(children: [
+                        TextSpan(
+                          text: "World!:\n".toUpperCase(),
+                          style: TextStyle(color: Theme.of(context).hintColor),
+                        ),
+                        TextSpan(
+                          text: "_Hello".toUpperCase(),
+                        ),
+                      ]),
                       textAlign: TextAlign.right,
-                      style: TextStyle(fontSize: 120, height: 1),
+                      style: TextStyle(fontSize: sectionFontSize, height: 1),
                     ),
                   ),
                 );
@@ -153,15 +209,15 @@ class _AppPageState extends State<AppPage> with TickerProviderStateMixin {
                     child: Text.rich(
                       TextSpan(children: [
                         TextSpan(
-                            text: "_Show\n".toUpperCase(),
-                            style: TextStyle(fontSize: 120)),
+                          text: "_Show\n".toUpperCase(),
+                        ),
                         TextSpan(
                             text: "#case".toUpperCase(),
                             style:
                                 TextStyle(color: Theme.of(context).hintColor)),
                       ]),
                       textAlign: TextAlign.right,
-                      style: TextStyle(fontSize: 120, height: 1),
+                      style: TextStyle(fontSize: sectionFontSize, height: 1),
                     ),
                   ),
                 );
@@ -175,7 +231,7 @@ class _AppPageState extends State<AppPage> with TickerProviderStateMixin {
                   offset: Offset(-animations[index].value * width,
                       animations[index].value * height),
                   child: Opacity(
-                    opacity: 1 - animations[index].value,
+                    opacity: 1, // - animations[index].value,
                     child: ConstrainedBox(
                       constraints: BoxConstraints(
                           minHeight: MediaQuery.of(context).size.height),

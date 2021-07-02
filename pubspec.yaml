@@ -29,6 +29,8 @@ dependencies:
     path: packages/showcase
   routes:
     path: packages/routes
+  utils:
+    path: packages/utils
   localize:
     path: packages/localize
   intl: ^0.17.0
