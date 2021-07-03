@@ -103,26 +103,9 @@ class _AppPageState extends State<AppPage> with TickerProviderStateMixin {
                 double curveValue =
                     Curves.easeInOut.transform(animations[0].value);
                 return Positioned(
-                  left: -60 - width * curveValue * 2,
-                  bottom: -150 - curveValue * height * 2,
-                  child: Opacity(
-                    opacity: (1 - curveValue * 2).clamp(0, 1),
-                    child: Image.network(
-                      "https://cdn3.iconfinder.com/data/icons/ink-social-media/35/android-512.png",
-                      color: Colors.white12,
-                    ),
-                  ),
-                );
-              }),
-          AnimatedBuilder(
-              animation: animations[0],
-              builder: (context, child) {
-                double curveValue =
-                    Curves.easeInOut.transform(animations[0].value);
-                return Positioned(
-                  left: 0,
-                  right: 0,
-                  bottom: 0,
+                  left: 32,
+                  right: 32,
+                  bottom: 60,
                   top: 0,
                   child: Opacity(
                     opacity: curveValue < 0.6
@@ -148,11 +131,10 @@ class _AppPageState extends State<AppPage> with TickerProviderStateMixin {
                                 transform: Matrix4.diagonal3Values(
                                     (curveValue * 2).clamp(0, 1), 1.0, 1.0),
                                 child: Container(
-                                  height: 16,
-                                  color: progressColor[
-                                      (curveValue * 2 * progressColor.length)
-                                          .floor()
-                                          .clamp(0, progressColor.length - 1)],
+                                  height: 8,
+                                  color: Theme.of(context)
+                                      .hintColor
+                                      .withOpacity(1),
                                 ),
                               ),
                             ),
@@ -176,7 +158,7 @@ class _AppPageState extends State<AppPage> with TickerProviderStateMixin {
                     Curves.easeInOut.transform(animations[0].value);
                 return Positioned(
                   right: 32, // + width * curveValue * 0.2,
-                  top: -108 + curveValue * height,
+                  top: -(context.isMd ? 108 : 75) + curveValue * height,
                   child: Opacity(
                     opacity: (1 - curveValue * 2).clamp(0, 1),
                     child: Text.rich(
@@ -203,7 +185,7 @@ class _AppPageState extends State<AppPage> with TickerProviderStateMixin {
                 return Positioned(
                   left: 0,
                   right: 32, //+ width * curveValue * 0.2,
-                  top: -height + 24 + (curveValue * 1).clamp(0, 1) * height,
+                  top: -height + 4 + (curveValue * 1).clamp(0, 1) * height,
                   child: Opacity(
                     opacity: (curveValue * 2).clamp(0, 1),
                     child: Text.rich(
@@ -228,7 +210,11 @@ class _AppPageState extends State<AppPage> with TickerProviderStateMixin {
               return AnimatedBuilder(
                 animation: animations[index],
                 builder: (context, child) => Transform.translate(
-                  offset: Offset(-animations[index].value * width,
+                  offset: Offset(
+                      (-Curves.fastOutSlowIn
+                                  .transform(animations[index].value) *
+                              width)
+                          .clamp(-width, 0),
                       animations[index].value * height),
                   child: Opacity(
                     opacity: 1, // - animations[index].value,

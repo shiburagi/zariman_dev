@@ -29,6 +29,12 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = ThemeData(
       fontFamily: "Barlow",
+      brightness: Brightness.light,
+      accentColor: Color(0xffE74C3C),
+      primarySwatch: Colors.blue,
+    );
+    final darkTheme = ThemeData(
+      fontFamily: "Barlow",
       brightness: Brightness.dark,
       accentColor: Color(0xffE74C3C),
       primarySwatch: Colors.blue,
@@ -39,7 +45,7 @@ class MyApp extends StatelessWidget {
     final GlobalKey<NavigatorState> key = GlobalKey();
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Flutter Demo',
+      title: 'Muhammad Norzariman',
       navigatorObservers: [NavigatorObserver()],
       navigatorKey: parentNavKey,
       localizationsDelegates: [
@@ -50,6 +56,7 @@ class MyApp extends StatelessWidget {
       ],
       supportedLocales: S.delegate.supportedLocales,
       theme: theme,
+      darkTheme: darkTheme,
       home: Builder(builder: (context) {
         final menu = {
           RoutePath.me: AppMenuItem(S.current.me, FontAwesomeIcons.mehBlank),

@@ -39,7 +39,6 @@ class MeView extends StatelessWidget {
           constraints: BoxConstraints(maxWidth: 700),
           child: Card(
             elevation: 10,
-            color: Colors.blueGrey.shade900,
             clipBehavior: Clip.antiAliasWithSaveLayer,
             child: IntrinsicHeight(
               child: Row(
@@ -77,7 +76,10 @@ class MeView extends StatelessWidget {
                                       child: Container(
                                         padding:
                                             EdgeInsets.fromLTRB(4, 2, 4, 2),
-                                        child: Text(e),
+                                        child: Text(
+                                          e,
+                                          style: TextStyle(color: Colors.white),
+                                        ),
                                       ),
                                     ))
                                 .toList(),
