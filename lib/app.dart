@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
@@ -31,6 +32,8 @@ class _AppPageState extends State<AppPage> with TickerProviderStateMixin {
   final ScrollController scrollController = ScrollController();
   late final AnimationController animationController;
   final List<AnimationController> animations = [];
+
+  late final Animation<double> animation1;
   @override
   void initState() {
     super.initState();
@@ -40,6 +43,7 @@ class _AppPageState extends State<AppPage> with TickerProviderStateMixin {
         vsync: this,
         duration: Duration(milliseconds: 200),
         upperBound: double.maxFinite);
+
     animations.add(
       AnimationController(
           vsync: this, duration: Duration(milliseconds: 200), upperBound: 1),
@@ -48,6 +52,9 @@ class _AppPageState extends State<AppPage> with TickerProviderStateMixin {
       AnimationController(
           vsync: this, duration: Duration(milliseconds: 200), upperBound: 1),
     );
+
+    animation1 = Tween<double>(begin: 0, end: 1).animate(
+        CurvedAnimation(parent: animations[0], curve: Interval(0.6, 0.7)));
     scrollController.addListener(() {
       final height = MediaQuery.of(context).size.height;
       double percent = scrollController.offset / height;
@@ -77,6 +84,8 @@ class _AppPageState extends State<AppPage> with TickerProviderStateMixin {
   }
 
   double get sectionFontSize => context.isMd ? 120 : 80;
+  double get animation1Value => animation1.value;
+
   List<Color> progressColor = [
     Colors.red.shade700,
     Colors.orange,
@@ -90,185 +99,240 @@ class _AppPageState extends State<AppPage> with TickerProviderStateMixin {
     return Scaffold(
       body: Stack(
         children: [
-          Positioned.fill(
-              child: AnimatedBuilder(
-            animation: animations[0],
-            builder: (context, child) => Container(
-              color: Color(0xffC0392B).withOpacity(animations[0].value),
-            ),
-          )),
-          AnimatedBuilder(
-              animation: animations[0],
-              builder: (context, child) {
-                double curveValue =
-                    Curves.easeInOut.transform(animations[0].value);
-                return Positioned(
-                  left: 32,
-                  right: 32,
-                  bottom: 60,
-                  top: 0,
-                  child: Opacity(
-                    opacity: curveValue < 0.6
-                        ? 1
-                        : (1 - (curveValue - 0.6) * 4).clamp(0, 1),
-                    child: Center(
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Card(
-                            elevation: 0,
-                            clipBehavior: Clip.antiAliasWithSaveLayer,
-                            color: Colors.transparent,
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(16),
-                                side: BorderSide(
-                                    color: Theme.of(context)
-                                        .hintColor
-                                        .withOpacity(1))),
-                            child: ConstrainedBox(
-                              constraints: BoxConstraints(maxWidth: 400),
-                              child: Transform(
-                                transform: Matrix4.diagonal3Values(
-                                    (curveValue * 2).clamp(0, 1), 1.0, 1.0),
-                                child: Container(
-                                  height: 8,
-                                  color: Theme.of(context)
-                                      .hintColor
-                                      .withOpacity(1),
-                                ),
-                              ),
-                            ),
-                          ),
-                          Text(
-                            curveValue >= 0.5
-                                ? "Completed".toUpperCase()
-                                : "${(curveValue * 200).clamp(0, 100).toStringAsFixed(1)}%",
-                            style: Theme.of(context).textTheme.headline6,
-                          ),
-                        ],
+          buildBackground(height),
+          buildLoader(),
+          buildHelloTitle(height),
+          buildShowcaseTitle(height),
+          buildMainBody(width, height),
+          buildUpButton(height),
+        ],
+      ),
+    );
+  }
+
+  AnimatedBuilder buildUpButton(double height) {
+    return AnimatedBuilder(
+        animation: animations[0],
+        builder: (context, child) {
+          double curveValue = Curves.easeInOut.transform(animations[0].value);
+          return Positioned(
+            left: 0,
+            right: 0,
+            bottom: 24 + height * curveValue, //+ width * curveValue * 0.2,
+            child: Center(
+              child: IgnorePointer(
+                ignoring: animations[0].value > 0.2,
+                child: Opacity(
+                  opacity: (1 - curveValue * 2).clamp(0, 1),
+                  child: InkWell(
+                    onTap: () =>
+                        widget.controller.currentRoute = RoutePath.showcase,
+                    child: Container(
+                      decoration: BoxDecoration(
+                          border: Border(
+                        top: BorderSide(color: Theme.of(context).hintColor),
+                        left: BorderSide(
+                            color:
+                                Theme.of(context).hintColor.withOpacity(0.1)),
+                      )),
+                      child: Icon(
+                        Icons.expand_less,
+                        size: 60,
                       ),
-                    ),
-                  ),
-                );
-              }),
-          AnimatedBuilder(
-              animation: animations[0],
-              builder: (context, child) {
-                double curveValue =
-                    Curves.easeInOut.transform(animations[0].value);
-                return Positioned(
-                  right: 32, // + width * curveValue * 0.2,
-                  top: -(context.isMd ? 108 : 75) + curveValue * height,
-                  child: Opacity(
-                    opacity: (1 - curveValue * 2).clamp(0, 1),
-                    child: Text.rich(
-                      TextSpan(children: [
-                        TextSpan(
-                          text: "World!:\n".toUpperCase(),
-                          style: TextStyle(color: Theme.of(context).hintColor),
-                        ),
-                        TextSpan(
-                          text: "_Hello".toUpperCase(),
-                        ),
-                      ]),
-                      textAlign: TextAlign.right,
-                      style: TextStyle(fontSize: sectionFontSize, height: 1),
-                    ),
-                  ),
-                );
-              }),
-          AnimatedBuilder(
-              animation: animations[0],
-              builder: (context, child) {
-                double curveValue =
-                    Curves.easeInOut.transform(animations[0].value);
-                return Positioned(
-                  left: 0,
-                  right: 32, //+ width * curveValue * 0.2,
-                  top: -height + 4 + (curveValue * 1).clamp(0, 1) * height,
-                  child: Opacity(
-                    opacity: (curveValue * 2).clamp(0, 1),
-                    child: Text.rich(
-                      TextSpan(children: [
-                        TextSpan(
-                          text: "_Show\n".toUpperCase(),
-                        ),
-                        TextSpan(
-                            text: "#case".toUpperCase(),
-                            style:
-                                TextStyle(color: Theme.of(context).hintColor)),
-                      ]),
-                      textAlign: TextAlign.right,
-                      style: TextStyle(fontSize: sectionFontSize, height: 1),
-                    ),
-                  ),
-                );
-              }),
-          ListView.builder(
-            controller: scrollController,
-            itemBuilder: (context, index) {
-              return AnimatedBuilder(
-                animation: animations[index],
-                builder: (context, child) => Transform.translate(
-                  offset: Offset(
-                      (-Curves.fastOutSlowIn
-                                  .transform(animations[index].value) *
-                              width)
-                          .clamp(-width, 0),
-                      animations[index].value * height),
-                  child: Opacity(
-                    opacity: 1, // - animations[index].value,
-                    child: ConstrainedBox(
-                      constraints: BoxConstraints(
-                          minHeight: MediaQuery.of(context).size.height),
-                      child: _pages[index](context),
                     ),
                   ),
                 ),
-              );
-            },
-            itemCount: _pages.length,
-          ),
-          AnimatedBuilder(
-              animation: animations[0],
-              builder: (context, child) {
-                double curveValue =
-                    Curves.easeInOut.transform(animations[0].value);
-                return Positioned(
-                  left: 0,
-                  right: 0,
-                  bottom:
-                      24 + height * curveValue, //+ width * curveValue * 0.2,
-                  child: Center(
-                    child: IgnorePointer(
-                      ignoring: animations[0].value > 0.2,
-                      child: Opacity(
-                        opacity: (1 - curveValue * 2).clamp(0, 1),
-                        child: InkWell(
-                          onTap: () => widget.controller.currentRoute =
-                              RoutePath.showcase,
+              ),
+            ),
+          );
+        });
+  }
+
+  AnimatedBuilder buildShowcaseTitle(double height) {
+    return AnimatedBuilder(
+        animation: animations[0],
+        builder: (context, child) {
+          double curveValue = Curves.easeInOut.transform(animations[0].value);
+          return Positioned(
+            left: 0,
+            right: 32, //+ width * curveValue * 0.2,
+            top: -height + 4 + (curveValue * 1).clamp(0, 1) * height,
+            child: Opacity(
+              opacity: (curveValue * 2).clamp(0, 1),
+              child: Text.rich(
+                TextSpan(children: [
+                  TextSpan(
+                    text: "_Show\n".toUpperCase(),
+                  ),
+                  TextSpan(
+                      text: "#case".toUpperCase(),
+                      style: TextStyle(color: Theme.of(context).hintColor)),
+                ]),
+                textAlign: TextAlign.right,
+                style: TextStyle(fontSize: sectionFontSize, height: 1),
+              ),
+            ),
+          );
+        });
+  }
+
+  AnimatedBuilder buildHelloTitle(double height) {
+    return AnimatedBuilder(
+        animation: animations[0],
+        builder: (context, child) {
+          double curveValue = Curves.easeInOut.transform(animations[0].value);
+          return Positioned(
+            right: 32, // + width * curveValue * 0.2,
+            top: -(context.isMd ? 108 : 75) + curveValue * height,
+            child: Opacity(
+              opacity: (1 - curveValue * 2).clamp(0, 1),
+              child: Text.rich(
+                TextSpan(children: [
+                  TextSpan(
+                    text: "World!:\n".toUpperCase(),
+                    style: TextStyle(color: Theme.of(context).hintColor),
+                  ),
+                  TextSpan(
+                    text: "_Hello".toUpperCase(),
+                  ),
+                ]),
+                textAlign: TextAlign.right,
+                style: TextStyle(fontSize: sectionFontSize, height: 1),
+              ),
+            ),
+          );
+        });
+  }
+
+  AnimatedBuilder buildLoader() {
+    return AnimatedBuilder(
+        animation: animations[0],
+        builder: (context, child) {
+          double curveValue = Curves.easeInOut.transform(animations[0].value);
+          return Positioned(
+            left: 32,
+            right: 32,
+            bottom: 0,
+            top: 0,
+            child: Opacity(
+              opacity: 1 - animation1Value,
+              child: Container(
+                alignment: Alignment.center,
+                width: MediaQuery.of(context).size.height / 2,
+                margin: EdgeInsets.only(bottom: animation1Value * 60),
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(
+                    maxWidth: min(MediaQuery.of(context).size.height,
+                            MediaQuery.of(context).size.width) *
+                        0.7,
+                  ),
+                  child: AspectRatio(
+                    aspectRatio: 1,
+                    child: Stack(
+                      children: [
+                        Positioned.fill(
                           child: Container(
-                            decoration: BoxDecoration(
-                                border: Border(
-                              top: BorderSide(
-                                  color: Theme.of(context).hintColor),
-                              left: BorderSide(
-                                  color: Theme.of(context)
-                                      .hintColor
-                                      .withOpacity(0.1)),
-                            )),
-                            child: Icon(
-                              Icons.expand_less,
-                              size: 60,
+                            child: CircularProgressIndicator(
+                              value: curveValue * 2,
+                              strokeWidth: 1,
+                              color: Theme.of(context).hintColor,
                             ),
                           ),
                         ),
-                      ),
+                        Center(
+                          child: Text(
+                            curveValue >= 0.5
+                                ? "Completed".toUpperCase()
+                                : "${(curveValue * 200).clamp(0, 100).toStringAsFixed(1)}%",
+                            style: context.isMd
+                                ? Theme.of(context).textTheme.headline2
+                                : Theme.of(context).textTheme.headline4,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                );
-              }),
-        ],
+                ),
+              ),
+            ),
+          );
+        });
+  }
+
+  Widget buildBackground(double height) {
+    return AnimatedBuilder(
+        animation: animations[0],
+        builder: (context, child) {
+          final value =
+              Curves.easeInOut.transform((animations[0].value * 2).clamp(0, 1));
+          final value1 =
+              Curves.fastOutSlowIn.transform((animations[0].value).clamp(0, 1));
+          return Positioned.fill(
+            top: height - height * value1,
+            bottom: -height + height * value1,
+            child: Container(
+              color: Color(0xffC0392B).withOpacity(
+                value,
+              ),
+            ),
+          );
+        });
+  }
+
+  ListView buildMainBody(double width, double height) {
+    return ListView.builder(
+      controller: scrollController,
+      itemBuilder: (context, index) {
+        return AnimatedBuilder(
+          animation: animations[index],
+          builder: (context, child) => Transform.translate(
+            offset: Offset(
+                (-Curves.fastOutSlowIn.transform(animations[index].value) *
+                        width)
+                    .clamp(-width, 0),
+                animations[index].value * height),
+            child: Opacity(
+              opacity: 1, // - animations[index].value,
+              child: ConstrainedBox(
+                constraints: BoxConstraints(
+                    minHeight: MediaQuery.of(context).size.height),
+                child: _pages[index](context),
+              ),
+            ),
+          ),
+        );
+      },
+      itemCount: _pages.length,
+    );
+  }
+}
+
+class LinearProgress extends StatelessWidget {
+  const LinearProgress({Key? key, required this.value}) : super(key: key);
+
+  final double value;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      child: Card(
+        elevation: 0,
+        clipBehavior: Clip.antiAliasWithSaveLayer,
+        color: Theme.of(context).hintColor.withOpacity(0.01),
+        shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+            side:
+                BorderSide(color: Theme.of(context).hintColor.withOpacity(0))),
+        child: ConstrainedBox(
+          constraints: BoxConstraints(maxWidth: 400),
+          child: Transform(
+            transform: Matrix4.diagonal3Values(value.clamp(0, 1), 1.0, 1.0),
+            child: Container(
+              height: 8,
+              color: Theme.of(context).hintColor.withOpacity(1),
+            ),
+          ),
+        ),
       ),
     );
   }
