@@ -57112,15 +57112,15 @@ if(s==null)s=j
 else{r=K.aA(b).x2.a
 r=s.it(P.aM(255,r>>>16&255,r>>>8&255,r&255))
 s=r}s=L.kr("Mobile App Developer",s,j,j)
-r=T.et(j,8,j)
+r=T.et(j,b.P(i).f.a.a<560?4:8,j)
 q=L.kr("Selangor, MY",k.gyu(k),j,j)
-p=T.et(j,16,j)
+p=T.et(j,b.P(i).f.a.a<560?8:16,j)
 o=Q.e4(j,j,j,"Coding is my hobby, kill bug which I created is my expertise, coffee is my blood, and I do not know how to hack NASA with HTML, \n\nbut I can ")
 n=K.aA(b).x2.a
 n=L.IA(Q.e4(H.a([o,Q.e4(j,j,A.fJ(j,j,P.aM(255,n>>>16&255,n>>>8&255,n&255),j,j,j,j,j,j,j,j,j,j,C.bB,j,j,!0,j,j,j,j,j,j,j),"develop a mobile app")],t.nO),j,j,j),j,j,j,j,j,k.gyu(k),j,j,j,j,j)
 o=H.ac($.ajY).j("al<1,l9>")
 m=t.E
-l=H.a([h,T.TF(M.bY(j,T.ns(H.a([e,s,r,q,p,n,T.et(j,b.P(i).f.a.a>=560?16:32,j),T.TF(M.bY(j,j,C.q,j,j,j,j,j,j,j,j,j),1),T.Jm(P.at(new H.al($.ajY,new V.a6b(),o),!0,o.j("b_.E")),C.dS,0)],m),C.bZ,C.bP),C.q,j,j,j,j,j,f,j,j,j),g)],m)
+l=H.a([h,T.TF(M.bY(j,T.ns(H.a([e,s,r,q,p,n,T.et(j,b.P(i).f.a.a<560?16:32,j),T.TF(M.bY(j,j,C.q,j,j,j,j,j,j,j,j,j),1),T.Jm(P.at(new H.al($.ajY,new V.a6b(),o),!0,o.j("b_.E")),C.dS,0)],m),C.bZ,C.bP),C.q,j,j,j,j,j,f,j,j,j),g)],m)
 g=T.aco(0,V.la(M.bY(j,j,C.q,j,j,j,j,j,j,j,j,j),C.bw,j,10,j,j),32)
 h=b.P(i).f.a.a<560?0:16
 i=b.P(i).f.a.a<560?k.FC(b):T.et(j,j,j)
