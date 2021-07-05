@@ -72,7 +72,7 @@ List<Showcase> get showcases => [
           ShowcaseAction(
             S.current.download,
             "https://www.uplabs.com/posts/payment-flow-payment-flow-066c958e-af5b-4bd3-8fbd-e2fdce44d7b4",
-            color: Colors.green,
+            color: Colors.black,
           )
         ],
         tags: [
@@ -117,6 +117,31 @@ List<Showcase> get showcases => [
             S.current.play,
             "https://outdemic.zariman.dev/",
           )
+        ],
+        platforms: [
+          ShowcasePlatform(Icons.language),
+        ],
+      ),
+      Showcase(
+        "https://jsontodart.zariman.dev/preview.png",
+        "JsonToDart",
+        "A tool to generate dart code from json data",
+        tags: [
+          "ReactJS",
+        ],
+        actions: [
+          ShowcaseAction(
+            S.current.view,
+            "https://jsontodart.zariman.dev/",
+          ),
+          ShowcaseAction(S.current.install,
+              "https://marketplace.visualstudio.com/items?itemName=MuhammadNorzariman.jsontodart",
+              color: Colors.black),
+          ShowcaseAction(
+            S.current.github,
+            "https://github.com/shiburagi/JsonToDart",
+            color: Colors.grey.shade900,
+          ),
         ],
         platforms: [
           ShowcasePlatform(Icons.language),
@@ -361,14 +386,14 @@ class ShowcaseItemAction extends StatelessWidget {
   Widget build(BuildContext context) {
     return Wrap(
       children: showcase.actions.map((e) {
-        final color = e.color ?? Theme.of(context).accentColor;
+        final color = e.color ?? Colors.blueGrey;
         return InkWell(
           onTap: () => launch(e.url),
           child: Card(
             clipBehavior: Clip.antiAlias,
             shape: RoundedRectangleBorder(
-                side: BorderSide(color: color),
-                borderRadius: BorderRadius.circular(32)),
+                side: BorderSide(color: color, width: 4),
+                borderRadius: BorderRadius.circular(8)),
             color: Colors.white,
             child: Container(
               color: color.withOpacity(0.1),

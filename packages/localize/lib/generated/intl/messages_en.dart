@@ -24,8 +24,11 @@ class MessageLookup extends MessageLookupByLibrary {
         "buy": MessageLookupByLibrary.simpleMessage("Buy"),
         "demo": MessageLookupByLibrary.simpleMessage("Demo"),
         "download": MessageLookupByLibrary.simpleMessage("Download"),
+        "github": MessageLookupByLibrary.simpleMessage("Github"),
+        "install": MessageLookupByLibrary.simpleMessage("Install"),
         "me": MessageLookupByLibrary.simpleMessage("Me"),
         "play": MessageLookupByLibrary.simpleMessage("Play"),
-        "showcase": MessageLookupByLibrary.simpleMessage("Showcase")
+        "showcase": MessageLookupByLibrary.simpleMessage("Showcase"),
+        "view": MessageLookupByLibrary.simpleMessage("View")
       };
 }
