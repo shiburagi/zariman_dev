@@ -94,7 +94,7 @@ class _AppPageState extends State<AppPage> with TickerProviderStateMixin {
 
     widget.controller.onChanged = (value) async {
       isAnimated = true;
-      await scrollController.animateTo(value == RoutePath.me ? 0 : meHeight,
+      await scrollController.animateTo(value == RoutePath.me ? 0 : _meHeight,
           duration: Duration(milliseconds: 500), curve: Curves.easeInOut);
       isAnimated = false;
     };
