@@ -14,6 +14,9 @@ dependencies:
   localize:
     path: ../localize
   url_launcher: ^6.0.8
+  flutter_linkify: ^5.0.2
+  font_awesome_flutter: ^9.1.0
+  auto_animated: ^3.0.0
 
 dev_dependencies:
   flutter_test:

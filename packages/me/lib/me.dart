@@ -1,7 +1,2 @@
-library me;
-
-/// A Calculator.
-class Calculator {
-  /// Returns [value] plus 1.
-  int addOne(int value) => value + 1;
-}
+export 'package:me/pages/me.dart';
+export 'package:me/views/me.dart';

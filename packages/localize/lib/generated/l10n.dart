@@ -69,6 +69,78 @@ class S {
       args: [],
     );
   }
+
+  /// `Play`
+  String get play {
+    return Intl.message(
+      'Play',
+      name: 'play',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Demo`
+  String get demo {
+    return Intl.message(
+      'Demo',
+      name: 'demo',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Buy`
+  String get buy {
+    return Intl.message(
+      'Buy',
+      name: 'buy',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Download`
+  String get download {
+    return Intl.message(
+      'Download',
+      name: 'download',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Install`
+  String get install {
+    return Intl.message(
+      'Install',
+      name: 'install',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Github`
+  String get github {
+    return Intl.message(
+      'Github',
+      name: 'github',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `View`
+  String get view {
+    return Intl.message(
+      'View',
+      name: 'view',
+      desc: '',
+      args: [],
+    );
+  }
+
+  // skipped getter for the '' key
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

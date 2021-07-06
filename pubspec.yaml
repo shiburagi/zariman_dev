@@ -29,11 +29,14 @@ dependencies:
     path: packages/showcase
   routes:
     path: packages/routes
+  utils:
+    path: packages/utils
   localize:
     path: packages/localize
   intl: ^0.17.0
   font_awesome_flutter: ^9.1.0
-
+  flutter_bloc: ^7.0.1
+  bloc: ^7.0.0
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
