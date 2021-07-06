@@ -1,0 +1,173 @@
+[
+    {
+        "title": "Cinema Booking Ticket App",
+        "preview": "https://raw.githubusercontent.com/shiburagi/payment_flow_challenge/master-v2/preview/images/preview-1.png",
+        "description": "A template for cinema app",
+        "tags": [
+            "dart",
+            "flutter"
+        ],
+        "actions": [
+            {
+                "label": "Buy",
+                "url": "https://www.uplabs.com/posts/cinema-flutter-app"
+            }
+        ],
+        "platforms": [
+            {
+                "icon": "f17b",
+                "family": "FontAwesomeBrands",
+                "package": "font_awesome_flutter"
+            }
+        ]
+    },
+    {
+        "preview": "https://bankapp.zariman.dev/preview.png",
+        "title": "Flutter Payment Flow {Bank}",
+        "description": "A personal project to experiment with UI and Animation of Flutter by converting a design/prototype from Uplabs Website to code.\nhttps://www.uplabs.com/posts/payment-flow-066c958e-af5b-4bd3-8fbd-e2fdce44d7b4",
+        "actions": [
+            {
+                "label": "Demo",
+                "url": "https://bankapp.zariman.dev/"
+            },
+            {
+                "label": "download",
+                "url": "https://www.uplabs.com/posts/payment-flow-payment-flow-066c958e-af5b-4bd3-8fbd-e2fdce44d7b4",
+                "color": "ff000000"
+            }
+        ],
+        "tags": [
+            "dart",
+            "flutter"
+        ],
+        "platforms": [
+            {
+                "icon": "f0ac",
+                "family": "FontAwesomeSolid",
+                "package": "font_awesome_flutter"
+            },
+            {
+                "icon": "f17b",
+                "family": "FontAwesomeBrands",
+                "package": "font_awesome_flutter"
+            },
+            {
+                "icon": "f179",
+                "family": "FontAwesomeBrands",
+                "package": "font_awesome_flutter"
+            }
+        ]
+    },
+    {
+        "preview": "https://raw.githubusercontent.com/shiburagi/Calendar-View-Flutter-UI/master/preview/image1.jpg",
+        "title": "Calendar View - Flutter UI",
+        "description": "an expirement Calendar UI code with Flutter. The calendar UI 100% develop from scratch without third-party library. The code should be able run on both Android and IOS",
+        "tags": [
+            "dart",
+            "flutter"
+        ],
+        "actions": [
+            {
+                "label": "buy",
+                "url": "https://www.uplabs.com/posts/calendar-view-flutter-ui"
+            }
+        ],
+        "platforms": [
+            {
+                "icon": "f17b",
+                "family": "FontAwesomeBrands",
+                "package": "font_awesome_flutter"
+            },
+            {
+                "icon": "f179",
+                "family": "FontAwesomeBrands",
+                "package": "font_awesome_flutter"
+            }
+        ]
+    },
+    {
+        "preview": "https://outdemic.zariman.dev/images/preview.png",
+        "title": "Outdemic",
+        "description": "A pandemic simulation game, written with dart language and flutter",
+        "tags": [
+            "dart",
+            "flutter"
+        ],
+        "actions": [
+            {
+                "label": "play",
+                "url": "https://outdemic.zariman.dev/"
+            }
+        ],
+        "platforms": [
+            {
+                "icon": "f0ac",
+                "family": "FontAwesomeSolid",
+                "package": "font_awesome_flutter"
+            }
+        ]
+    },
+    {
+        "preview": "https://jsontodart.zariman.dev/preview.png",
+        "title": "JsonToDart",
+        "description": "A tool to generate dart code from json data",
+        "tags": [
+            "ReactJS"
+        ],
+        "actions": [
+            {
+                "label": "View",
+                "url": "https://jsontodart.zariman.dev/"
+            },
+            {
+                "label": "Install",
+                "url": "https://marketplace.visualstudio.com/items?itemName=MuhammadNorzariman.jsontodart",
+                "color": "ffaaaaaa"
+            },
+            {
+                "label": "Github",
+                "url": "https://github.com/shiburagi/JsonToDart",
+                "color": "ff000000"
+            }
+        ],
+        "platforms": [
+            {
+                "icon": "f0ac",
+                "family": "FontAwesomeSolid",
+                "package": "font_awesome_flutter"
+            }
+        ]
+    },
+    {
+        "preview": "https://groceryapp.zariman.dev/preview.png",
+        "title": "Flutter Grocery App",
+        "description": "A template for grocecy app, written with dart language  and flutter",
+        "actions": [
+            {
+                "label": "Demo",
+                "url": "https://groceryapp.zariman.dev/"
+            }
+        ],
+        "tags": [
+            "dart",
+            "flutter"
+        ],
+        "platforms": [
+            {
+                "icon": "f0ac",
+                "family": "FontAwesomeSolid",
+                "package": "font_awesome_flutter"
+            },
+            {
+                "icon": "f17b",
+                "family": "FontAwesomeBrands",
+                "package": "font_awesome_flutter"
+            },
+            {
+                "icon": "f179",
+                "family": "FontAwesomeBrands",
+                "package": "font_awesome_flutter"
+            }
+        ]
+    }
+]

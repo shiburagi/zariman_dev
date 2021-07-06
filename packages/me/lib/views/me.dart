@@ -1,29 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:repositories/models/me.dart';
+import 'package:repositories/repositories.dart';
+import 'package:styled_text/styled_text.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:utils/utils.dart';
-
-class SocialItem {
-  final String? name;
-  final IconData? icon;
-  final String? url;
-
-  SocialItem(this.name, this.icon, this.url);
-}
-
-final languages = [
-  "Android",
-  "Flutter",
-  "Java",
-  "Kotlin",
-  "ReactJS",
-];
-final socials = [
-  SocialItem("Github", FontAwesomeIcons.github, "https://github.com/shiburagi"),
-  SocialItem("LinkedIn", FontAwesomeIcons.linkedin,
-      "https://www.linkedin.com/in/zariman/"),
-  SocialItem("E-mail", Icons.email, "mailto:zariman.razari@gmail.com"),
-];
 
 class MeView extends StatefulWidget {
   const MeView({
@@ -51,80 +31,6 @@ class _MeViewState extends State<MeView> with SingleTickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    final children = [
-      context.isXs
-          ? SizedBox()
-          : Expanded(
-              flex: 2,
-              child: buildPhoto(context),
-            ),
-      Expanded(
-        flex: context.isMd ? 3 : 2,
-        child: Container(
-          padding: context.isXs
-              ? EdgeInsets.fromLTRB(16, 8, 16, 16)
-              : EdgeInsets.fromLTRB(8, 48, 32, 24),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Text(
-                "Muhammad Norzariman Bin Razari",
-                style: Theme.of(context).textTheme.headline5?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    fontSize: context.isMd ? 30 : 20,
-                    height: 1),
-              ),
-              Text("Mobile App Developer",
-                  style: textStyle?.copyWith(
-                      color: Theme.of(context).hintColor.withOpacity(1))),
-              SizedBox(
-                height: context.isXs ? 4 : 8,
-              ),
-              Text(
-                "Selangor, MY",
-                style: textStyle,
-              ),
-              SizedBox(
-                height: context.isXs ? 8 : 16,
-              ),
-              Text.rich(
-                TextSpan(children: [
-                  TextSpan(
-                    text:
-                        "Coding is my hobby, kill bug which I created is my expertise, coffee is my blood, and I do not know how to hack NASA with HTML, \n\nbut I can ",
-                  ),
-                  TextSpan(
-                    text: "develop a mobile app",
-                    style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: Theme.of(context).hintColor.withOpacity(1)),
-                  ),
-                ]),
-                style: textStyle,
-              ),
-              SizedBox(
-                height: context.isXs ? 16 : 32,
-              ),
-              Expanded(child: Container()),
-              Wrap(
-                children: languages
-                    .map((e) => Card(
-                          color: Colors.purple,
-                          child: Container(
-                            padding: EdgeInsets.fromLTRB(4, 2, 4, 2),
-                            child: Text(
-                              e,
-                              style: TextStyle(color: Colors.white),
-                            ),
-                          ),
-                        ))
-                    .toList(),
-              ),
-            ],
-          ),
-        ),
-      )
-    ];
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.center,
@@ -149,20 +55,11 @@ class _MeViewState extends State<MeView> with SingleTickerProviderStateMixin {
                 onExit: (event) {
                   // _contoller.reverse();
                 },
-                child: Container(
-                  margin: EdgeInsets.only(left: context.isXs ? 0 : 16),
-                  child: Column(
-                    children: [
-                      context.isXs ? buildPhoto(context) : SizedBox(),
-                      IntrinsicHeight(
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: children,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
+                child: FutureBuilder<Me>(
+                    future: AppRepo.instance.getMe(),
+                    builder: (context, snapshot) {
+                      return buildCard(context, snapshot.data);
+                    }),
               ),
             ],
           ),
@@ -171,7 +68,96 @@ class _MeViewState extends State<MeView> with SingleTickerProviderStateMixin {
     );
   }
 
-  Widget buildPhoto(BuildContext context) {
+  Widget buildCard(BuildContext context, Me? me) {
+    final children = [
+      context.isXs
+          ? SizedBox()
+          : Expanded(
+              flex: 2,
+              child: buildPhoto(context, me),
+            ),
+      Expanded(
+        flex: context.isMd ? 3 : 2,
+        child: Container(
+          padding: context.isXs
+              ? EdgeInsets.fromLTRB(16, 8, 16, 16)
+              : EdgeInsets.fromLTRB(8, 48, 32, 24),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Text(
+                me?.name ?? "",
+                style: Theme.of(context).textTheme.headline5?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    fontSize: context.isMd ? 30 : 20,
+                    height: 1),
+              ),
+              Text(me?.expertise ?? "",
+                  style: textStyle?.copyWith(
+                      color: Theme.of(context).hintColor.withOpacity(1))),
+              SizedBox(
+                height: context.isXs ? 4 : 8,
+              ),
+              Text(
+                me?.location ?? "",
+                style: textStyle,
+              ),
+              SizedBox(
+                height: context.isXs ? 8 : 16,
+              ),
+              StyledText(
+                text: me?.summary ?? "",
+                tags: {
+                  "b": StyledTextTag(
+                    style: textStyle?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: Theme.of(context).hintColor.withOpacity(1),
+                    ),
+                  )
+                },
+                style: textStyle,
+              ),
+              SizedBox(
+                height: context.isXs ? 16 : 32,
+              ),
+              Expanded(child: Container()),
+              Wrap(
+                children: me?.languages
+                        ?.map((e) => Card(
+                              color: Colors.purple,
+                              child: Container(
+                                padding: EdgeInsets.fromLTRB(4, 2, 4, 2),
+                                child: Text(
+                                  e,
+                                  style: TextStyle(color: Colors.white),
+                                ),
+                              ),
+                            ))
+                        .toList() ??
+                    [],
+              ),
+            ],
+          ),
+        ),
+      )
+    ];
+    return Container(
+      margin: EdgeInsets.only(left: context.isXs ? 0 : 16),
+      child: Column(
+        children: [
+          context.isXs ? buildPhoto(context, me) : SizedBox(),
+          IntrinsicHeight(
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: children,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget buildPhoto(BuildContext context, Me? me) {
     double socialBlockHeight = context.isXs ? 48 : 60;
     return Container(
       margin: EdgeInsets.fromLTRB(4, 0, 4, 0),
@@ -193,13 +179,21 @@ class _MeViewState extends State<MeView> with SingleTickerProviderStateMixin {
                       clipBehavior: Clip.antiAliasWithSaveLayer,
                       child: Container(
                         padding: EdgeInsets.only(top: 32),
-                        child: Image.asset(
-                          "assets/images/me4.png",
-                          fit: BoxFit.fitWidth,
-                          width: context.isXs
-                              ? MediaQuery.of(context).size.width / 2
-                              : null,
-                        ),
+                        child: me?.image == null
+                            ? Image.asset(
+                                "assets/images/me.png",
+                                fit: BoxFit.fitWidth,
+                                width: context.isXs
+                                    ? MediaQuery.of(context).size.width / 2
+                                    : null,
+                              )
+                            : Image.network(
+                                me!.image!,
+                                fit: BoxFit.fitWidth,
+                                width: context.isXs
+                                    ? MediaQuery.of(context).size.width / 2
+                                    : null,
+                              ),
                       ),
                     ),
                   ),
@@ -236,22 +230,31 @@ class _MeViewState extends State<MeView> with SingleTickerProviderStateMixin {
               ),
               child: Wrap(
                 crossAxisAlignment: WrapCrossAlignment.center,
-                children: socials
-                    .map((e) => FutureBuilder<bool>(
-                        future: canLaunch(e.url ?? ""),
-                        builder: (context, snapshot) => snapshot.data == true
-                            ? InkWell(
-                                onTap: () => launch(e.url ?? ""),
-                                child: Card(
-                                  color: Theme.of(context).canvasColor,
-                                  child: Container(
-                                    padding: EdgeInsets.fromLTRB(4, 4, 4, 4),
-                                    child: Icon(e.icon),
-                                  ),
-                                ),
-                              )
-                            : SizedBox()))
-                    .toList(),
+                children: me?.socials
+                        ?.map((e) => FutureBuilder<bool>(
+                            future: canLaunch(e.url ?? ""),
+                            builder: (context, snapshot) =>
+                                snapshot.data == true
+                                    ? InkWell(
+                                        onTap: () => launch(e.url ?? ""),
+                                        child: Card(
+                                          color: Theme.of(context).canvasColor,
+                                          child: Container(
+                                            padding:
+                                                EdgeInsets.fromLTRB(4, 4, 4, 4),
+                                            child: Icon(IconData(
+                                              int.tryParse(e.icon ?? "",
+                                                      radix: 16) ??
+                                                  0,
+                                              fontFamily: e.family,
+                                              fontPackage: e.package,
+                                            )),
+                                          ),
+                                        ),
+                                      )
+                                    : SizedBox()))
+                        .toList() ??
+                    [],
               ),
             ),
           )
