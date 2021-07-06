@@ -321,15 +321,16 @@ class _ShowcaseItemViewState extends State<ShowcaseItemView>
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
-                          Text(widget.showcase.title),
+                          Text(
+                            widget.showcase.title,
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          ),
                           Linkify(
                             text: widget.showcase.description,
                             onOpen: (link) async {
                               if (await canLaunch(link.url)) {
                                 await launch(link.url);
-                              } else {
-                                throw 'Could not launch $link';
-                              }
+                              } else {}
                             },
                             style: Theme.of(context)
                                 .textTheme

@@ -49,6 +49,14 @@ class _AppPageState extends State<AppPage> with TickerProviderStateMixin {
   late final Animation<double> animation2;
   late final Animation<double> animation3;
   double meHeight = 0;
+
+  double get _meHeight {
+    final obj = keys[0].currentContext?.findRenderObject();
+    RenderBox? box = obj == null ? null : obj as RenderBox;
+
+    return box?.size.height ?? meHeight;
+  }
+
   @override
   void initState() {
     super.initState();
@@ -72,11 +80,7 @@ class _AppPageState extends State<AppPage> with TickerProviderStateMixin {
       curve: Interval(0.0, 1.0),
     ));
     scrollController.addListener(() {
-      final obj = keys[0].currentContext?.findRenderObject();
-      RenderBox? box = obj == null ? null : obj as RenderBox;
-
-      final height = box?.size.height ?? meHeight;
-      meHeight = height;
+      meHeight = _meHeight;
 
       double percent = scrollController.offset / height;
       animationController.value = (percent);
@@ -90,10 +94,8 @@ class _AppPageState extends State<AppPage> with TickerProviderStateMixin {
 
     widget.controller.onChanged = (value) async {
       isAnimated = true;
-      await scrollController.animateTo(
-          value == RoutePath.me ? 0 : MediaQuery.of(context).size.height,
-          duration: Duration(milliseconds: 500),
-          curve: Curves.easeInOut);
+      await scrollController.animateTo(value == RoutePath.me ? 0 : meHeight,
+          duration: Duration(milliseconds: 500), curve: Curves.easeInOut);
       isAnimated = false;
     };
   }
@@ -139,12 +141,11 @@ class _AppPageState extends State<AppPage> with TickerProviderStateMixin {
     return AnimatedBuilder(
         animation: animation3,
         builder: (context, child) {
-          double curveValue = Curves.easeInOut.transform(animation1.value);
+          double curveValue = Curves.easeInOut.transform(animation2.value);
           return Positioned(
-            left: context.isXs ? null : 0,
+            // left: context.isXs ? null : 0,
             right: 0,
-            bottom: (context.isXs ? 0 : 24) +
-                height * curveValue, //+ width * curveValue * 0.2,
+            bottom: 0 + height * curveValue, //+ width * curveValue * 0.2,
             child: Center(
               child: IgnorePointer(
                 ignoring: animation3.value > 0.2,
@@ -155,15 +156,16 @@ class _AppPageState extends State<AppPage> with TickerProviderStateMixin {
                         widget.controller.currentRoute = RoutePath.showcase,
                     child: Container(
                       decoration: BoxDecoration(
+                          color: Theme.of(context).canvasColor.withOpacity(0.1),
                           border: Border(
-                        top: BorderSide(color: Theme.of(context).hintColor),
-                        left: BorderSide(
-                            color:
-                                Theme.of(context).hintColor.withOpacity(0.1)),
-                      )),
+                            top: BorderSide(color: Theme.of(context).hintColor),
+                            left: BorderSide(
+                                color:
+                                    Theme.of(context).hintColor.withOpacity(1)),
+                          )),
                       child: Icon(
                         Icons.expand_less,
-                        size: context.isXs ? 48 : 60,
+                        size: context.isXs ? 40 : 48,
                       ),
                     ),
                   ),
@@ -322,7 +324,8 @@ class _AppPageState extends State<AppPage> with TickerProviderStateMixin {
                       .clamp(-width, 0.0);
 
               double dy = animation3.value * meHeight;
-              if (meHeight > MediaQuery.of(context).size.height) {
+              if (meHeight - pagesPadding(context) >
+                  MediaQuery.of(context).size.height) {
                 dx = 0;
                 dy = 0;
               }

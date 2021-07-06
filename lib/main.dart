@@ -111,7 +111,7 @@ class CardMenu extends StatefulWidget {
 class _CardMenuState extends State<CardMenu>
     with SingleTickerProviderStateMixin {
   late final AnimationController _controller;
-  double get size => context.isXs ? 16 : 24;
+  double get size => context.isXs ? 20 : 24;
   double get space => context.isXs ? 16 : 32;
   @override
   void initState() {
@@ -192,7 +192,7 @@ class _CardMenuState extends State<CardMenu>
         ),
         Container(
           margin: EdgeInsets.symmetric(vertical: 4),
-          width: 16,
+          width: space / 2,
           height: 1,
           decoration: BoxDecoration(
               color: Theme.of(context).hintColor.withOpacity(0.5),
