@@ -58004,7 +58004,7 @@ var $async$$1=P.a8(function(b,c){if(b===1)return P.a9(c,r)
 while(true)switch(s){case 0:n=q.a
 n.a=!0
 p=q.b
-o=a==="/"?0:p.c.F(t.l).f.a.b
+o=a==="/"?0:p.z
 s=2
 return P.ah(p.d.fU(o,C.bA,P.bC(0,500)),$async$$1)
 case 2:n.a=!1
