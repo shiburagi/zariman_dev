@@ -205,7 +205,6 @@ class _ShowcaseItemViewState extends State<ShowcaseItemView>
                                               radix: 16) ??
                                           0;
 
-                                      print("$code  ${e.family} ${e.package}");
                                       return Icon(IconData(code,
                                           fontFamily: e.family,
                                           fontPackage: e.package));

@@ -5,11 +5,11 @@ import 'package:styled_text/styled_text.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:utils/utils.dart';
 
-class MeView extends StatefulWidget {
-  const MeView({
-    Key? key,
-  }) : super(key: key);
+const kDefaultProfileImage = "assets/images/me.png";
 
+class MeView extends StatefulWidget {
+  const MeView({Key? key, required this.me}) : super(key: key);
+  final Me me;
   @override
   _MeViewState createState() => _MeViewState();
 }
@@ -49,18 +49,13 @@ class _MeViewState extends State<MeView> with SingleTickerProviderStateMixin {
                 ),
               ),
               MouseRegion(
-                onEnter: (event) {
-                  // _contoller.forward();
-                },
-                onExit: (event) {
-                  // _contoller.reverse();
-                },
-                child: FutureBuilder<Me>(
-                    future: AppRepo.instance.getMe(),
-                    builder: (context, snapshot) {
-                      return buildCard(context, snapshot.data);
-                    }),
-              ),
+                  onEnter: (event) {
+                    // _contoller.forward();
+                  },
+                  onExit: (event) {
+                    // _contoller.reverse();
+                  },
+                  child: buildCard(context, widget.me)),
             ],
           ),
         )
@@ -181,7 +176,7 @@ class _MeViewState extends State<MeView> with SingleTickerProviderStateMixin {
                         padding: EdgeInsets.only(top: 32),
                         child: me?.image == null
                             ? Image.asset(
-                                "assets/images/me.png",
+                                kDefaultProfileImage,
                                 fit: BoxFit.fitWidth,
                                 width: context.isXs
                                     ? MediaQuery.of(context).size.width / 2

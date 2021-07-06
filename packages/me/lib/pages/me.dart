@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:me/views/me.dart';
+import 'package:repositories/models/me.dart';
 
 class MePage extends StatefulWidget {
   MePage({Key? key}) : super(key: key);
@@ -37,7 +38,9 @@ class _MePageState extends State<MePage> {
           ),
           Center(
             child: SingleChildScrollView(
-              child: MeView(),
+              child: MeView(
+                me: Me(),
+              ),
             ),
           ),
         ],

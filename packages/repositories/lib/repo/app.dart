@@ -6,24 +6,29 @@ import 'package:repositories/models/showcase.dart';
 
 class AppRepo {
   static final AppRepo instance = AppRepo._();
-
+  Me? me;
+  List<Showcase>? showcases;
   AppRepo._();
 
   Future<Me> getMe() async {
-    final data = await rootBundle.loadString('data/me.json');
+    if (me != null) return me!;
+    final data = await rootBundle.loadString('assets/data/me.json');
+
     try {
       final json = jsonDecode(data);
-      return Me.fromJson(json);
+      return me = Me.fromJson(json);
     } catch (e) {
       return Me();
     }
   }
 
   Future<List<Showcase>> getShowcases() async {
-    final data = await rootBundle.loadString('data/showcase.json');
+    if (showcases != null) return showcases!;
+
+    final data = await rootBundle.loadString('assets/data/showcase.json');
     try {
       final json = jsonDecode(data);
-      return List<Map<String, dynamic>>.from(json)
+      return showcases = List<Map<String, dynamic>>.from(json)
           .map((e) => Showcase.fromJson(e))
           .toList();
     } catch (e) {

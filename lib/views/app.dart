@@ -2,12 +2,26 @@ import 'dart:math';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
-import 'package:me/me.dart';
-import 'package:personal_website/main.dart';
-import 'package:personal_website/smooth_scroll.dart';
+import 'package:me/me.dart' as meClass;
+import 'package:personal_website/views/menu.dart';
+import 'package:personal_website/views/smooth_scroll.dart';
+import 'package:repositories/models/me.dart';
+import 'package:repositories/repositories.dart';
 import 'package:routes/routes.dart';
-import 'package:showcase/showcase.dart';
+import 'package:showcase/showcase.dart' as showcaseClass;
 import 'package:utils/utils.dart';
+
+Future loadDependentLibrary(BuildContext context) async {
+  // await meClass.loadLibrary();
+  // await showcaseClass.loadLibrary();
+  Me me = await AppRepo.instance.getMe();
+  await AppRepo.instance.getShowcases();
+
+  if (me.image == null)
+    await precacheImage(AssetImage(meClass.kDefaultProfileImage), context);
+  else
+    await precacheImage(NetworkImage(me.image!), context);
+}
 
 double pagesPadding(BuildContext context) {
   return context.isMd
@@ -22,13 +36,13 @@ final List<WidgetBuilder> _pages = [
         padding: EdgeInsets.only(
             top: pagesPadding(context), bottom: pagesPadding(context)),
         alignment: Alignment.center,
-        child: MeView(),
+        child: meClass.MeView(me: AppRepo.instance.me!),
       ),
   (context) => Container(
         padding: EdgeInsets.only(
           top: pagesPadding(context),
         ),
-        child: ShowcaseView(),
+        child: showcaseClass.ShowcaseView(),
       ),
 ];
 
@@ -123,17 +137,15 @@ class _AppPageState extends State<AppPage> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
-    return Scaffold(
-      body: Stack(
-        children: [
-          buildBackground(),
-          buildLoader(),
-          buildHelloTitle(),
-          buildShowcaseTitle(),
-          buildMainBody(width),
-          buildUpButton(),
-        ],
-      ),
+    return Stack(
+      children: [
+        buildBackground(),
+        buildLoader(),
+        buildHelloTitle(),
+        buildShowcaseTitle(),
+        buildMainBody(width),
+        buildUpButton(),
+      ],
     );
   }
 
