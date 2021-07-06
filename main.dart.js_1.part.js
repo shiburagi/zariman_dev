@@ -6086,7 +6086,7 @@ while(true)switch(w){case 0:o=s.a
 if(o!=null){u=o
 w=1
 break}w=3
-return P.ae($.Am().Jr("data/me.json"),$async$oY)
+return P.ae($.Am().Jr("assets/data/me.json"),$async$oY)
 case 3:r=e
 try{q=C.aN.xS(0,r,null)
 o=V.av8(q)
@@ -6104,7 +6104,7 @@ while(true)switch(w){case 0:n=s.b
 if(n!=null){u=n
 w=1
 break}w=3
-return P.ae($.Am().Jr("data/showcase.json"),$async$mg)
+return P.ae($.Am().Jr("assets/data/showcase.json"),$async$mg)
 case 3:r=e
 try{q=C.aN.xS(0,r,null)
 n=P.bz(q,!0,x.P)
@@ -7754,4 +7754,4 @@ w($,"aF_","apD",function(){return P.fR("^(.*?)((?:https?:\\/\\/|www\\.)[^\\s/$.?
 w($,"aEA","apn",function(){return P.fR("^(https?:\\/\\/)",!1,!1)})
 w($,"aEz","ahL",function(){return H.a([new S.aca(),new S.acb()],H.X("q<i(U)>"))})
 w($,"aBX","adF",function(){return new S.Ss()})})()}
-$__dart_deferred_initializers__["qAC16aqYWwp0dbCbrSQyowN6VKk="] = $__dart_deferred_initializers__.current
+$__dart_deferred_initializers__["Pcm6yeR/6gE3f+GIBAJbM2yzk5U="] = $__dart_deferred_initializers__.current
