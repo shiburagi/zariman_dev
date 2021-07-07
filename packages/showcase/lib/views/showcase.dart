@@ -123,10 +123,12 @@ class _ShowcaseItemViewState extends State<ShowcaseItemView>
               left: -48 * animation.value,
               right: -48 * animation.value,
               top: -24 * animation.value,
+              bottom: 48,
               child: AnimatedContainer(
                 duration: Duration(milliseconds: 200),
                 child: Image.network(
                   widget.showcase.preview ?? "",
+                  fit: BoxFit.cover,
                 ),
               ),
             ),
@@ -160,7 +162,9 @@ class _ShowcaseItemViewState extends State<ShowcaseItemView>
                     shape: RoundedRectangleBorder(),
                     child: Container(
                       decoration: BoxDecoration(
-                          border: Border(top: BorderSide(color: Colors.white))),
+                          border: Border(
+                              top: BorderSide(
+                                  color: Theme.of(context).dividerColor))),
                       padding: EdgeInsets.fromLTRB(16, 16, 16, 16),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
