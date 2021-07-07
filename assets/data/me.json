@@ -1,0 +1,36 @@
+{
+    "name": "Muhammad Norzariman Bin Razari",
+    "expertise": "Mobile App Developer",
+    "location": "Selangor, MY",
+    "summary": "Coding is my hobby, kill bug which I created is my expertise, coffee is my blood, and never hack NASA with HTML, \n\nbut I can <b>develop a mobile app</b>",
+    "languages": [
+        "Android",
+        "Flutter",
+        "Java",
+        "Kotlin",
+        "ReactJS"
+    ],
+    "socials": [
+        {
+            "label": "Github",
+            "url": "https://github.com/shiburagi",
+            "icon": "f09b",
+            "family": "FontAwesomeBrands",
+            "package": "font_awesome_flutter"
+        },
+        {
+            "label": "LinkedIn",
+            "url": "https://www.linkedin.com/in/zariman/",
+            "icon": "f08c",
+            "family": "FontAwesomeBrands",
+            "package": "font_awesome_flutter"
+        },
+        {
+            "label": "E-mail",
+            "url": "mailto:zariman.razari@gmail.com",
+            "icon": "f0e0",
+            "family": "FontAwesomeSolid",
+            "package": "font_awesome_flutter"
+        }
+    ]
+}

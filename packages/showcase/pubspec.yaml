@@ -11,6 +11,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  repositories:
+    path: ../repositories
   localize:
     path: ../localize
   url_launcher: ^6.0.8

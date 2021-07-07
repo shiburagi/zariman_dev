@@ -1,173 +1,11 @@
 import 'dart:math';
 import 'dart:ui';
-import 'package:flutter_linkify/flutter_linkify.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:localize/localize.dart';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_linkify/flutter_linkify.dart';
+import 'package:repositories/models/showcase.dart';
+import 'package:repositories/repositories.dart';
 import 'package:url_launcher/url_launcher.dart';
-
-class ShowcaseAction {
-  final String label;
-  final String url;
-  final Color? color;
-
-  ShowcaseAction(this.label, this.url, {this.color});
-}
-
-class ShowcasePlatform {
-  final IconData icon;
-
-  ShowcasePlatform(this.icon);
-}
-
-class Showcase {
-  final String image;
-  final String title;
-  final String description;
-  final List<String> tags;
-  final List<ShowcasePlatform> platforms;
-  final List<ShowcaseAction> actions;
-
-  Showcase(
-    this.image,
-    this.title,
-    this.description, {
-    this.tags = const [],
-    this.actions = const [],
-    this.platforms = const [],
-  });
-}
-
-List<Showcase> get showcases => [
-      Showcase(
-        "https://raw.githubusercontent.com/shiburagi/payment_flow_challenge/master-v2/preview/images/preview-1.png",
-        "Cinema Booking Ticket App",
-        "A template for cinema app",
-        tags: [
-          "dart",
-          "flutter",
-        ],
-        actions: [
-          ShowcaseAction(
-            S.current.buy,
-            "https://www.uplabs.com/posts/cinema-flutter-app",
-          )
-        ],
-        platforms: [
-          ShowcasePlatform(FontAwesomeIcons.android),
-          ShowcasePlatform(FontAwesomeIcons.apple),
-        ],
-      ),
-      Showcase(
-        "https://bankapp.zariman.dev/preview.png",
-        "Flutter Payment Flow (Bank)",
-        "A personal project to experiment with UI and Animation of Flutter by converting a design/prototype from Uplabs Website to code.\n" +
-            "https://www.uplabs.com/posts/payment-flow-066c958e-af5b-4bd3-8fbd-e2fdce44d7b4",
-        actions: [
-          ShowcaseAction(
-            S.current.demo,
-            "https://bankapp.zariman.dev/",
-          ),
-          ShowcaseAction(
-            S.current.download,
-            "https://www.uplabs.com/posts/payment-flow-payment-flow-066c958e-af5b-4bd3-8fbd-e2fdce44d7b4",
-            color: Colors.black,
-          )
-        ],
-        tags: [
-          "dart",
-          "flutter",
-        ],
-        platforms: [
-          ShowcasePlatform(Icons.language),
-          ShowcasePlatform(FontAwesomeIcons.android),
-          ShowcasePlatform(FontAwesomeIcons.apple),
-        ],
-      ),
-      Showcase(
-        "https://raw.githubusercontent.com/shiburagi/Calendar-View-Flutter-UI/master/preview/image1.jpg",
-        "Calendar View - Flutter UI",
-        "an expirement Calendar UI code with Flutter. The calendar UI 100% develop from scratch without third-party library. The code should be able run on both Android and IOS",
-        tags: [
-          "dart",
-          "flutter",
-        ],
-        actions: [
-          ShowcaseAction(
-            S.current.buy,
-            "https://www.uplabs.com/posts/calendar-view-flutter-ui",
-          )
-        ],
-        platforms: [
-          ShowcasePlatform(FontAwesomeIcons.android),
-          ShowcasePlatform(FontAwesomeIcons.apple),
-        ],
-      ),
-      Showcase(
-        "https://outdemic.zariman.dev/images/preview.png",
-        "Outdemic",
-        "A pandemic simulation game, written with dart language and flutter",
-        tags: [
-          "dart",
-          "flutter",
-        ],
-        actions: [
-          ShowcaseAction(
-            S.current.play,
-            "https://outdemic.zariman.dev/",
-          )
-        ],
-        platforms: [
-          ShowcasePlatform(Icons.language),
-        ],
-      ),
-      Showcase(
-        "https://jsontodart.zariman.dev/preview.png",
-        "JsonToDart",
-        "A tool to generate dart code from json data",
-        tags: [
-          "ReactJS",
-        ],
-        actions: [
-          ShowcaseAction(
-            S.current.view,
-            "https://jsontodart.zariman.dev/",
-          ),
-          ShowcaseAction(S.current.install,
-              "https://marketplace.visualstudio.com/items?itemName=MuhammadNorzariman.jsontodart",
-              color: Colors.black),
-          ShowcaseAction(
-            S.current.github,
-            "https://github.com/shiburagi/JsonToDart",
-            color: Colors.grey.shade900,
-          ),
-        ],
-        platforms: [
-          ShowcasePlatform(Icons.language),
-        ],
-      ),
-      Showcase(
-        "https://groceryapp.zariman.dev/preview.png",
-        "Flutter Grocery App",
-        "A template for grocecy app, written with dart language  and flutter",
-        actions: [
-          ShowcaseAction(
-            S.current.demo,
-            "https://groceryapp.zariman.dev/",
-          )
-        ],
-        tags: [
-          "dart",
-          "flutter",
-        ],
-        platforms: [
-          ShowcasePlatform(Icons.language),
-          ShowcasePlatform(Icons.android),
-          ShowcasePlatform(FontAwesomeIcons.apple),
-        ],
-      ),
-    ];
 
 class ShowcaseView extends StatelessWidget {
   const ShowcaseView({
@@ -187,31 +25,36 @@ class ShowcaseView extends StatelessWidget {
         Center(
           child: ConstrainedBox(
             constraints: BoxConstraints(maxWidth: 1000),
-            child: GridView.builder(
-              shrinkWrap: true,
-              physics: NeverScrollableScrollPhysics(),
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                childAspectRatio: 1.2,
-                mainAxisSpacing: 4,
-                crossAxisSpacing: 4,
-                crossAxisCount: column,
-              ),
-              itemBuilder: (context, index) {
-                if (index >= showcases.length) {
-                  return Container(
-                    alignment: Alignment.center,
-                    color: Theme.of(context).canvasColor,
-                    child: Text(
-                      "404".toUpperCase(),
-                      style: Theme.of(context).textTheme.headline3,
+            child: FutureBuilder<List<Showcase>>(
+                future: AppRepo.instance.getShowcases(),
+                builder: (context, snapshot) {
+                  List<Showcase> showcases = snapshot.data ?? [];
+                  return GridView.builder(
+                    shrinkWrap: true,
+                    physics: NeverScrollableScrollPhysics(),
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      childAspectRatio: 1.2,
+                      mainAxisSpacing: 4,
+                      crossAxisSpacing: 4,
+                      crossAxisCount: column,
                     ),
+                    itemBuilder: (context, index) {
+                      if (index >= showcases.length) {
+                        return Container(
+                          alignment: Alignment.center,
+                          color: Theme.of(context).canvasColor,
+                          child: Text(
+                            "404".toUpperCase(),
+                            style: Theme.of(context).textTheme.headline3,
+                          ),
+                        );
+                      }
+                      final showcase = showcases[index];
+                      return ShowcaseItemView(showcase: showcase);
+                    },
+                    itemCount: (showcases.length / column).ceil() * column,
                   );
-                }
-                final showcase = showcases[index];
-                return ShowcaseItemView(showcase: showcase);
-              },
-              itemCount: (showcases.length / column).ceil() * column,
-            ),
+                }),
           ),
         ),
         SizedBox(
@@ -256,8 +99,9 @@ class _ShowcaseItemViewState extends State<ShowcaseItemView>
         controller.reverse();
       },
       child: InkWell(
-        onTap:
-            widget.showcase.actions.isEmpty ? null : () => controller.forward(),
+        onTap: widget.showcase.actions?.isNotEmpty != true
+            ? null
+            : () => controller.forward(),
         child: buildCard(context),
       ),
     );
@@ -282,7 +126,7 @@ class _ShowcaseItemViewState extends State<ShowcaseItemView>
               child: AnimatedContainer(
                 duration: Duration(milliseconds: 200),
                 child: Image.network(
-                  widget.showcase.image,
+                  widget.showcase.preview ?? "",
                 ),
               ),
             ),
@@ -322,11 +166,11 @@ class _ShowcaseItemViewState extends State<ShowcaseItemView>
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
                           Text(
-                            widget.showcase.title,
+                            widget.showcase.title ?? "-",
                             style: TextStyle(fontWeight: FontWeight.bold),
                           ),
                           Linkify(
-                            text: widget.showcase.description,
+                            text: widget.showcase.description ?? "",
                             onOpen: (link) async {
                               if (await canLaunch(link.url)) {
                                 await launch(link.url);
@@ -346,18 +190,26 @@ class _ShowcaseItemViewState extends State<ShowcaseItemView>
                               Wrap(
                                 spacing: 4,
                                 children: widget.showcase.tags
-                                    .map((e) => Chip(
-                                          backgroundColor: Colors.green,
-                                          padding: EdgeInsets.zero,
-                                          label: Text(e),
-                                        ))
-                                    .toList(),
+                                        ?.map((e) => Chip(
+                                              backgroundColor: Colors.green,
+                                              padding: EdgeInsets.zero,
+                                              label: Text(e),
+                                            ))
+                                        .toList() ??
+                                    [],
                               ),
                               Wrap(
                                 spacing: 4,
-                                children: widget.showcase.platforms
-                                    .map((e) => Icon(e.icon))
-                                    .toList(),
+                                children: widget.showcase.platforms?.map((e) {
+                                      final code = int.tryParse(e.icon ?? "",
+                                              radix: 16) ??
+                                          0;
+
+                                      return Icon(IconData(code,
+                                          fontFamily: e.family,
+                                          fontPackage: e.package));
+                                    }).toList() ??
+                                    [],
                               ),
                             ],
                           ),
@@ -386,30 +238,33 @@ class ShowcaseItemAction extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Wrap(
-      children: showcase.actions.map((e) {
-        final color = e.color ?? Colors.blueGrey;
-        return InkWell(
-          onTap: () => launch(e.url),
-          child: Card(
-            clipBehavior: Clip.antiAlias,
-            shape: RoundedRectangleBorder(
-                side: BorderSide(color: color, width: 4),
-                borderRadius: BorderRadius.circular(8)),
-            color: Colors.white,
-            child: Container(
-              color: color.withOpacity(0.1),
-              padding: EdgeInsets.symmetric(horizontal: 24, vertical: 8),
-              child: Text(
-                e.label.toUpperCase(),
-                style: Theme.of(context)
-                    .textTheme
-                    .headline6
-                    ?.copyWith(color: color, fontWeight: FontWeight.bold),
+      children: showcase.actions?.map((e) {
+            final color = e.color == null
+                ? Colors.blueGrey
+                : Color(int.parse(e.color!, radix: 16));
+            return InkWell(
+              onTap: () => launch(e.url ?? ""),
+              child: Card(
+                clipBehavior: Clip.antiAlias,
+                shape: RoundedRectangleBorder(
+                    side: BorderSide(color: color, width: 4),
+                    borderRadius: BorderRadius.circular(8)),
+                color: Colors.white,
+                child: Container(
+                  color: color.withOpacity(0.1),
+                  padding: EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+                  child: Text(
+                    e.label?.toUpperCase() ?? "",
+                    style: Theme.of(context)
+                        .textTheme
+                        .headline6
+                        ?.copyWith(color: color, fontWeight: FontWeight.bold),
+                  ),
+                ),
               ),
-            ),
-          ),
-        );
-      }).toList(),
+            );
+          }).toList() ??
+          [],
     );
   }
 }
