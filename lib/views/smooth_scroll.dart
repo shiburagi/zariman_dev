@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 const int DEFAULT_NORMAL_SCROLL_ANIMATION_LENGTH_MS = 250;
 const int DEFAULT_SCROLL_SPEED = 130;
 
-class SmoothScrollWeb extends StatefulWidget {
+class SmoothScrollWeb extends StatelessWidget {
   ///Same ScrollController as the child widget's.
   final ScrollController controller;
 
@@ -22,6 +22,8 @@ class SmoothScrollWeb extends StatefulWidget {
   ///Curve of the animation.
   final Curve curve;
 
+  double _scroll = 0;
+
   SmoothScrollWeb({
     required this.controller,
     required this.child,
@@ -31,46 +33,39 @@ class SmoothScrollWeb extends StatefulWidget {
   });
 
   @override
-  _SmoothScrollWebState createState() => _SmoothScrollWebState();
-}
-
-class _SmoothScrollWebState extends State<SmoothScrollWeb> {
-  double _scroll = 0;
-
-  @override
   Widget build(BuildContext context) {
-    widget.controller.addListener(() {
-      if (widget.controller.position.activity is IdleScrollActivity) {
-        _scroll = widget.controller.position.extentBefore;
+    controller.addListener(() {
+      if (controller.position.activity is IdleScrollActivity) {
+        _scroll = controller.position.extentBefore;
       }
     });
 
     return Listener(
       onPointerSignal: (pointerSignal) {
-        int millis = widget.scrollAnimationLength;
+        int millis = scrollAnimationLength;
         if (pointerSignal is PointerScrollEvent) {
           if (pointerSignal.scrollDelta.dy > 0) {
-            _scroll += widget.scrollSpeed;
+            _scroll += scrollSpeed;
           } else {
-            _scroll -= widget.scrollSpeed;
+            _scroll -= scrollSpeed;
           }
-          if (_scroll > widget.controller.position.maxScrollExtent) {
-            _scroll = widget.controller.position.maxScrollExtent;
-            millis = widget.scrollAnimationLength ~/ 2;
+          if (_scroll > controller.position.maxScrollExtent) {
+            _scroll = controller.position.maxScrollExtent;
+            millis = scrollAnimationLength ~/ 2;
           }
           if (_scroll < 0) {
             _scroll = 0;
-            millis = widget.scrollAnimationLength ~/ 2;
+            millis = scrollAnimationLength ~/ 2;
           }
 
-          widget.controller.animateTo(
+          controller.animateTo(
             _scroll,
             duration: Duration(milliseconds: millis),
-            curve: widget.curve,
+            curve: curve,
           );
         }
       },
-      child: widget.child,
+      child: child,
     );
   }
 }

@@ -17,8 +17,10 @@ class Splashpage extends StatefulWidget {
 
 class _SplashpageState extends State<Splashpage> {
   _loadClass() async {
-    await appClass.loadLibrary();
-    await appClass.loadDependentLibrary(context);
+    try {
+      await appClass.loadLibrary();
+      await appClass.loadDependentLibrary(context);
+    } catch (e) {}
     return true;
   }
 
@@ -34,7 +36,8 @@ class _SplashpageState extends State<Splashpage> {
         future: _loadClass(),
         builder: (context, snapshot) {
           final isLoad = snapshot.data == null;
-          print(isLoad);
+
+          print("$isLoad  ${snapshot.data}");
           return Stack(
             children: [
               isLoad
