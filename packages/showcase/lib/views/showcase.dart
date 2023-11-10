@@ -3,7 +3,6 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_linkify/flutter_linkify.dart';
-import 'package:repositories/models/showcase.dart';
 import 'package:repositories/repositories.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -45,7 +44,7 @@ class ShowcaseView extends StatelessWidget {
                           color: Theme.of(context).canvasColor,
                           child: Text(
                             "404".toUpperCase(),
-                            style: Theme.of(context).textTheme.headline3,
+                            style: Theme.of(context).textTheme.displaySmall,
                           ),
                         );
                       }
@@ -178,7 +177,7 @@ class _ShowcaseItemViewState extends State<ShowcaseItemView>
                             },
                             style: Theme.of(context)
                                 .textTheme
-                                .subtitle2
+                                .titleSmall
                                 ?.copyWith(color: Theme.of(context).hintColor),
                           ),
                           SizedBox(
@@ -257,7 +256,7 @@ class ShowcaseItemAction extends StatelessWidget {
                     e.label?.toUpperCase() ?? "",
                     style: Theme.of(context)
                         .textTheme
-                        .headline6
+                        .titleLarge
                         ?.copyWith(color: color, fontWeight: FontWeight.bold),
                   ),
                 ),

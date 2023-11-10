@@ -70,7 +70,7 @@ class _CardMenuState extends State<CardMenu>
                     height: size + space,
                     child: Container(
                       decoration: BoxDecoration(
-                          color: Theme.of(context).accentColor,
+                          color: Theme.of(context).colorScheme.secondary,
                           borderRadius: BorderRadius.circular(24),
                           gradient: LinearGradient(colors: [
                             Colors.pink,

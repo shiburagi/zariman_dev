@@ -26,7 +26,7 @@ class _MeViewState extends State<MeView> with SingleTickerProviderStateMixin {
         upperBound: 1);
   }
 
-  TextStyle? get textStyle => Theme.of(context).textTheme.headline6?.copyWith(
+  TextStyle? get textStyle => Theme.of(context).textTheme.titleLarge?.copyWith(
       color: Theme.of(context).hintColor, fontSize: context.isMd ? 18 : 14);
 
   @override
@@ -82,7 +82,7 @@ class _MeViewState extends State<MeView> with SingleTickerProviderStateMixin {
             children: [
               Text(
                 me?.name ?? "",
-                style: Theme.of(context).textTheme.headline5?.copyWith(
+                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                     fontWeight: FontWeight.bold,
                     fontSize: context.isMd ? 30 : 20,
                     height: 1),

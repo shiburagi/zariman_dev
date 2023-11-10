@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:localize/localize.dart';
 import 'package:me/pages/me.dart';
 import 'package:personal_website/views/menu.dart';
@@ -19,16 +18,16 @@ Map<String, WidgetBuilder> routes = {
 final theme = ThemeData(
   fontFamily: "Barlow",
   brightness: Brightness.light,
-  accentColor: Color(0xffE74C3C),
-  primarySwatch: Colors.green,
+  colorScheme: ColorScheme.fromSwatch(primarySwatch: Colors.green)
+      .copyWith(secondary: Color(0xffE74C3C)),
 );
 final darkTheme = ThemeData(
   fontFamily: "Barlow",
   brightness: Brightness.dark,
-  accentColor: Color(0xffE74C3C),
-  primarySwatch: Colors.green,
   canvasColor: Colors.black,
   cardColor: Colors.blueGrey.shade900,
+  colorScheme: ColorScheme.fromSwatch(primarySwatch: Colors.green)
+      .copyWith(secondary: Color(0xffE74C3C)),
 );
 
 class MyApp extends StatelessWidget {

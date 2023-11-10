@@ -1,11 +1,9 @@
 import 'dart:math';
-import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:me/me.dart' as meClass;
 import 'package:personal_website/views/menu.dart';
 import 'package:personal_website/views/smooth_scroll.dart';
-import 'package:repositories/models/me.dart';
 import 'package:repositories/repositories.dart';
 import 'package:routes/routes.dart';
 import 'package:showcase/showcase.dart' as showcaseClass;
@@ -292,8 +290,8 @@ class _AppPageState extends State<AppPage> with TickerProviderStateMixin {
                                 ? "Completed".toUpperCase()
                                 : "${(curveValue * 100).clamp(0, 100).toStringAsFixed(1)}%",
                             style: context.isMd
-                                ? Theme.of(context).textTheme.headline2
-                                : Theme.of(context).textTheme.headline4,
+                                ? Theme.of(context).textTheme.displayMedium
+                                : Theme.of(context).textTheme.headlineMedium,
                           ),
                         ),
                       ],
