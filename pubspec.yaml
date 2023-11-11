@@ -23,6 +23,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  experience:
+    path: packages/experience
   me:
     path: packages/me
   showcase:
@@ -39,7 +41,7 @@ dependencies:
   font_awesome_flutter: ^10.6.0 
   flutter_bloc: ^8.1.3
   bloc: ^8.1.2
-
+  web_smooth_scroll: ^1.1.0
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.2
@@ -47,6 +49,7 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  intl_utils: ^2.8.5
  
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

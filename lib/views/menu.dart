@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:routes/routes.dart';
 import 'package:utils/utils.dart';
+import 'dart:developer' as dev;
 
 class AppMenuItem {
   final String name;
@@ -34,12 +35,17 @@ class _CardMenuState extends State<CardMenu>
   void initState() {
     _controller =
         AnimationController(vsync: this, duration: Duration(milliseconds: 200));
+    final size = widget.menu.length;
+    final scale = 1.0 / (size - 1);
     widget.controller._setter = (f) {
-      if (widget.controller._currentRoute == RoutePath.showcase) {
-        _controller.reverse();
-      } else
-        _controller.forward();
       setState(f);
+      final index =
+          widget.menu.keys.toList().indexOf(widget.controller._currentRoute);
+      dev.log(
+          "widget.controller._currentRoute: ${widget.controller.currentRoute}");
+      dev.log("indexL: $index");
+
+      _controller.animateTo(index * scale);
     };
     super.initState();
   }
@@ -51,6 +57,8 @@ class _CardMenuState extends State<CardMenu>
 
   @override
   Widget build(BuildContext context) {
+    final menuCount = widget.menu.length;
+    final menuHeight = (size + space) * menuCount;
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -64,7 +72,9 @@ class _CardMenuState extends State<CardMenu>
               AnimatedBuilder(
                 animation: _controller,
                 builder: (context, child) => Positioned(
-                    top: _controller.value * (size + space + 1),
+                    top: _controller.value *
+                        (size + space + 1) *
+                        (menuCount - 1),
                     left: 0,
                     right: 0,
                     height: size + space,
@@ -79,7 +89,7 @@ class _CardMenuState extends State<CardMenu>
                     )),
               ),
               Container(
-                height: (size + space) * 2,
+                height: menuHeight,
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: widget.menu.entries.map((e) {

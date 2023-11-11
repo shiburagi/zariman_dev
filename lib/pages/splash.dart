@@ -25,9 +25,11 @@ class _SplashpageState extends State<Splashpage> {
   }
 
   final menu = {
-    RoutePath.me: AppMenuItem(S.current.me, FontAwesomeIcons.mehBlank),
+    RoutePath.me: AppMenuItem(S.current.me, FontAwesomeIcons.faceMehBlank),
     RoutePath.showcase:
-        AppMenuItem(S.current.showcase, FontAwesomeIcons.briefcase),
+        AppMenuItem(S.current.showcase, FontAwesomeIcons.desktop),
+    RoutePath.experience:
+        AppMenuItem(S.current.experience, FontAwesomeIcons.briefcase),
   };
   @override
   Widget build(BuildContext context) {

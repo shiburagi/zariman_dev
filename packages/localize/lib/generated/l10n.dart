@@ -70,6 +70,16 @@ class S {
     );
   }
 
+  /// `Experience`
+  String get experience {
+    return Intl.message(
+      'Experience',
+      name: 'experience',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Play`
   String get play {
     return Intl.message(

@@ -13,6 +13,8 @@ dependencies:
     sdk: flutter
   repositories:
     path: ../repositories
+  uikit:
+    path: ../uikit
   localize:
     path: ../localize
   url_launcher: ^6.0.8

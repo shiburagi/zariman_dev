@@ -1,13 +1,15 @@
-import 'dart:math';
-
+import 'package:experience/experience.dart' as experienceClass;
 import 'package:flutter/material.dart';
 import 'package:me/me.dart' as meClass;
 import 'package:personal_website/views/menu.dart';
-import 'package:personal_website/views/smooth_scroll.dart';
 import 'package:repositories/repositories.dart';
 import 'package:routes/routes.dart';
 import 'package:showcase/showcase.dart' as showcaseClass;
 import 'package:utils/utils.dart';
+import 'package:web_smooth_scroll/web_smooth_scroll.dart';
+
+import '../components/background.dart';
+import '../components/loader.dart';
 
 Future loadDependentLibrary(BuildContext context) async {
   // await meClass.loadLibrary();
@@ -42,6 +44,12 @@ final List<WidgetBuilder> _pages = [
         ),
         child: showcaseClass.ShowcaseView(),
       ),
+  (context) => Container(
+        padding: EdgeInsets.only(
+          top: pagesPadding(context),
+        ),
+        child: experienceClass.ExperienceView(),
+      ),
 ];
 
 class AppPage extends StatefulWidget {
@@ -55,7 +63,18 @@ class AppPage extends StatefulWidget {
 class _AppPageState extends State<AppPage> with TickerProviderStateMixin {
   final ScrollController scrollController = ScrollController();
   late final AnimationController animationController;
-  final List<GlobalKey> keys = [];
+
+  GlobalKey meKey = GlobalKey();
+  GlobalKey showcaseKey = GlobalKey();
+  GlobalKey experienceKey = GlobalKey();
+
+  List<GlobalKey> get keyMap => [meKey, showcaseKey, experienceKey];
+
+  final List<String> paths = [
+    RoutePath.me,
+    RoutePath.showcase,
+    RoutePath.experience
+  ];
 
   late final Animation<double> animation1;
   late final Animation<double> animation2;
@@ -63,20 +82,34 @@ class _AppPageState extends State<AppPage> with TickerProviderStateMixin {
   double meHeight = 0;
 
   double get _meHeight {
-    final obj = keys[0].currentContext?.findRenderObject();
-    RenderBox? box = obj == null ? null : obj as RenderBox;
+    try {
+      final obj = keyMap[0].currentContext?.findRenderObject();
+      RenderBox? box = obj == null ? null : obj as RenderBox;
 
-    return box?.size.height ?? meHeight;
+      return box?.size.height ?? meHeight;
+    } catch (e) {
+      return meHeight;
+    }
+  }
+
+  double? getPositionIndex(int index) {
+    try {
+      final obj = keyMap[index].currentContext?.findRenderObject();
+
+      RenderBox? box = obj == null ? null : obj as RenderBox;
+      Offset? position =
+          box?.localToGlobal(Offset.zero); //this is global position
+
+      return position?.dy;
+    } catch (e) {
+      return null;
+    }
   }
 
   @override
   void initState() {
     super.initState();
 
-    keys.add(GlobalKey());
-    keys.add(GlobalKey());
-
-    bool isAnimated = false;
     animationController = AnimationController(
       vsync: this,
       duration: Duration(milliseconds: 200),
@@ -91,23 +124,22 @@ class _AppPageState extends State<AppPage> with TickerProviderStateMixin {
       parent: animationController,
       curve: Interval(0.0, 1.0),
     ));
-    scrollController.addListener(() {
-      meHeight = _meHeight;
 
-      double percent = scrollController.offset / height;
-      animationController.value = (percent);
+    initScrollListener();
+  }
 
-      if (!isAnimated) if (percent < 0.8) {
-        widget.controller.currentRoute = RoutePath.me;
-      } else {
-        widget.controller.currentRoute = RoutePath.showcase;
-      }
-    });
+  bool isAnimated = false;
 
+  void initScrollListener() {
     widget.controller.onChanged = (value) async {
       isAnimated = true;
-      await scrollController.animateTo(value == RoutePath.me ? 0 : _meHeight,
-          duration: Duration(milliseconds: 500), curve: Curves.easeInOut);
+      final index = paths.indexOf(value);
+      await scrollController.animateTo(
+          value == RoutePath.me
+              ? 0
+              : scrollController.offset + (getPositionIndex(index) ?? 0),
+          duration: Duration(milliseconds: 500),
+          curve: Curves.easeInOut);
       isAnimated = false;
     };
   }
@@ -135,13 +167,24 @@ class _AppPageState extends State<AppPage> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
+    final body = buildMainBody(width);
     return Stack(
       children: [
-        buildBackground(),
-        buildLoader(),
-        buildHelloTitle(),
-        buildShowcaseTitle(),
-        buildMainBody(width),
+        AppBackground(animation2, animation3, height),
+        AppLoader(animation1, animation2, animation3),
+        meClass.MeTitle(
+            observerKey: meKey,
+            sectionFontSize: sectionFontSize,
+            animation3: animation3),
+        showcaseClass.ShowcaseTitle(
+            observerKey: showcaseKey,
+            sectionFontSize: sectionFontSize,
+            scrollController: scrollController),
+        experienceClass.ExperienceTitle(
+            observerKey: experienceKey,
+            sectionFontSize: sectionFontSize,
+            scrollController: scrollController),
+        body,
         buildUpButton(),
       ],
     );
@@ -153,9 +196,8 @@ class _AppPageState extends State<AppPage> with TickerProviderStateMixin {
         builder: (context, child) {
           double curveValue = Curves.easeInOut.transform(animation2.value);
           return Positioned(
-            // left: context.isXs ? null : 0,
             right: 0,
-            bottom: 0 + height * curveValue, //+ width * curveValue * 0.2,
+            bottom: 0 + height * curveValue,
             child: Center(
               child: IgnorePointer(
                 ignoring: animation3.value > 0.2,
@@ -186,144 +228,6 @@ class _AppPageState extends State<AppPage> with TickerProviderStateMixin {
         });
   }
 
-  AnimatedBuilder buildShowcaseTitle() {
-    return AnimatedBuilder(
-        animation: animation3,
-        builder: (context, child) {
-          double curveValue = Curves.easeInOut.transform(animation3.value);
-          return Positioned(
-            left: 0,
-            right: 32, //+ width * curveValue * 0.2,
-            top: -height + 4 + (curveValue).clamp(0, 1) * height,
-            child: Opacity(
-              opacity: (curveValue * 2).clamp(0, 1),
-              child: Text.rich(
-                TextSpan(children: [
-                  TextSpan(
-                    text: "_Show\n".toUpperCase(),
-                  ),
-                  TextSpan(
-                      text: "#case".toUpperCase(),
-                      style: TextStyle(color: Theme.of(context).hintColor)),
-                ]),
-                textAlign: TextAlign.right,
-                style: TextStyle(fontSize: sectionFontSize, height: 1),
-              ),
-            ),
-          );
-        });
-  }
-
-  AnimatedBuilder buildHelloTitle() {
-    return AnimatedBuilder(
-        animation: animation3,
-        builder: (context, child) {
-          double curveValue = Curves.easeInOut.transform(animation3.value);
-          return Positioned(
-            right: 32, // + width * curveValue * 0.2,
-            top: -(context.isMd
-                    ? 108
-                    : context.isXs
-                        ? 55
-                        : 75) +
-                curveValue * height,
-            child: Opacity(
-              opacity: (1 - curveValue * 2).clamp(0, 1),
-              child: Text.rich(
-                TextSpan(children: [
-                  TextSpan(
-                    text: "World!:\n".toUpperCase(),
-                    style: TextStyle(color: Theme.of(context).hintColor),
-                  ),
-                  TextSpan(
-                    text: "_Hello".toUpperCase(),
-                  ),
-                ]),
-                textAlign: TextAlign.right,
-                style: TextStyle(fontSize: sectionFontSize, height: 1),
-              ),
-            ),
-          );
-        });
-  }
-
-  AnimatedBuilder buildLoader() {
-    return AnimatedBuilder(
-        animation: animation3,
-        builder: (context, child) {
-          double curveValue = Curves.easeInOut.transform(animation2.value);
-          return Positioned(
-            left: 32,
-            right: 32,
-            bottom: 0,
-            top: 0,
-            child: Opacity(
-              opacity: curveValue == 0 ? 0 : 1 - animation1Value,
-              child: Container(
-                alignment: Alignment.center,
-                width: MediaQuery.of(context).size.height / 2,
-                margin: EdgeInsets.only(bottom: animation1Value * 60),
-                child: ConstrainedBox(
-                  constraints: BoxConstraints(
-                    maxWidth: max(
-                        min(MediaQuery.of(context).size.height,
-                                MediaQuery.of(context).size.width) *
-                            0.7,
-                        500),
-                  ),
-                  child: AspectRatio(
-                    aspectRatio: 1,
-                    child: Stack(
-                      children: [
-                        Positioned.fill(
-                          child: Container(
-                            child: CircularProgressIndicator(
-                              value: curveValue,
-                              strokeWidth: 1,
-                              color: Theme.of(context).hintColor,
-                            ),
-                          ),
-                        ),
-                        Center(
-                          child: Text(
-                            curveValue >= 1
-                                ? "Completed".toUpperCase()
-                                : "${(curveValue * 100).clamp(0, 100).toStringAsFixed(1)}%",
-                            style: context.isMd
-                                ? Theme.of(context).textTheme.displayMedium
-                                : Theme.of(context).textTheme.headlineMedium,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          );
-        });
-  }
-
-  Widget buildBackground() {
-    return AnimatedBuilder(
-        animation: animation3,
-        builder: (context, child) {
-          final value =
-              Curves.easeInOut.transform((animation2.value).clamp(0, 1));
-          final value1 =
-              Curves.fastOutSlowIn.transform((animation3.value).clamp(0, 1));
-          return Positioned.fill(
-            top: height - height * value1,
-            bottom: -height + height * value1,
-            child: Container(
-              color: Color(0xffC0392B).withOpacity(
-                value,
-              ),
-            ),
-          );
-        });
-  }
-
   List<Widget Function(BuildContext, WidgetBuilder)> get childAnimation => [
         (context, builder) {
           return AnimatedBuilder(
@@ -347,25 +251,68 @@ class _AppPageState extends State<AppPage> with TickerProviderStateMixin {
           );
         },
         (context, builder) => builder(context),
+        (context, builder) => builder(context),
       ];
 
   Widget buildMainBody(double width) {
-    return SmoothScrollWeb(
-      controller: scrollController,
-      child: ListView.builder(
-        controller: scrollController,
-        itemBuilder: (context, index) {
-          return childAnimation[index](
-            context,
-            (context) => ConstrainedBox(
-              key: keys[index],
-              constraints:
-                  BoxConstraints(minHeight: MediaQuery.of(context).size.height),
-              child: _pages[index](context),
-            ),
+    List<Widget> children = List.generate(_pages.length, (index) {
+      return childAnimation[index](
+        context,
+        (context) {
+          final child = ConstrainedBox(
+            key: keyMap[index],
+            constraints:
+                BoxConstraints(minHeight: MediaQuery.of(context).size.height),
+            child: _pages[index](context),
           );
+          return child;
         },
-        itemCount: _pages.length,
+      );
+    });
+
+    return WebSmoothScroll(
+      controller: scrollController,
+      child: NotificationListener<ScrollNotification>(
+        onNotification: (scrollNotification) {
+          if (scrollNotification is ScrollStartNotification) {
+          } else if (scrollNotification is ScrollUpdateNotification) {
+            meHeight = _meHeight;
+            double percent = scrollController.offset / height;
+            animationController.value = (percent);
+            if (!isAnimated) {
+              for (var i = keyMap.length - 1; i >= 0; i--) {
+                debugPrint(
+                    "getPositionIndex($i): ${getPositionIndex(i)} ${scrollController.offset}");
+
+                final path = paths[i];
+                final height = MediaQuery.of(context).size.height;
+                final offset = getPositionIndex(i);
+                if (offset != null && offset < height * 0.4) {
+                  widget.controller.currentRoute = path;
+                  break;
+                }
+              }
+            }
+          } else if (scrollNotification is ScrollEndNotification) {
+            // final currentRoute = widget.controller.currentRoute;
+            // if (!isAnimated &&
+            //     [RoutePath.me, RoutePath.showcase].contains(currentRoute))
+            //   Future(() async => {
+            //         await scrollController.animateTo(
+            //             currentRoute == RoutePath.me ? 0 : _meHeight,
+            //             duration: Duration(milliseconds: 500),
+            //             curve: Curves.easeInOut)
+            //       }).then((value) => {isAnimated = false});
+            // isAnimated = true;
+          }
+
+          return true;
+        },
+        child: SingleChildScrollView(
+          controller: scrollController,
+          child: Column(children: children),
+        ),
+        // child: ListView(controller: scrollController, children: children),
       ),
     );
   }
