@@ -17,10 +17,13 @@ dependencies:
     path: ../localize
   uikit:
     path: ../uikit
+  utils:
+    path: ../utils
   url_launcher: ^6.0.8
   flutter_linkify: ^5.0.2
   font_awesome_flutter: ^10.6.0 
   auto_animated: ^3.0.0
+  timeline_tile: ^2.0.0
 
 dev_dependencies:
   flutter_test:

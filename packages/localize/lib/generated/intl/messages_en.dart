@@ -30,7 +30,9 @@ class MessageLookup extends MessageLookupByLibrary {
         "install": MessageLookupByLibrary.simpleMessage("Install"),
         "me": MessageLookupByLibrary.simpleMessage("Me"),
         "play": MessageLookupByLibrary.simpleMessage("Play"),
+        "present": MessageLookupByLibrary.simpleMessage("Present"),
         "showcase": MessageLookupByLibrary.simpleMessage("Showcase"),
+        "today": MessageLookupByLibrary.simpleMessage("Today"),
         "view": MessageLookupByLibrary.simpleMessage("View")
       };
 }

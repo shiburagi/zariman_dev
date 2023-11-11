@@ -150,6 +150,26 @@ class S {
     );
   }
 
+  /// `Today`
+  String get today {
+    return Intl.message(
+      'Today',
+      name: 'today',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Present`
+  String get present {
+    return Intl.message(
+      'Present',
+      name: 'present',
+      desc: '',
+      args: [],
+    );
+  }
+
   // skipped getter for the '' key
 }
 

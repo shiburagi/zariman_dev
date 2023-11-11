@@ -1,10 +1,13 @@
-import 'dart:math';
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
-import 'package:flutter_linkify/flutter_linkify.dart';
+import 'package:localize/generated/l10n.dart';
+import 'package:repositories/models/experience.dart';
 import 'package:repositories/repositories.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:timeline_tile/timeline_tile.dart';
+import 'package:utils/utils.dart';
+
+const dotColor = Color(0XFFFA8072);
+const lineColor = Color(0xFFFFE4E1);
+const lineStyle = LineStyle(color: lineColor, thickness: 2);
 
 class ExperienceView extends StatelessWidget {
   const ExperienceView({
@@ -13,47 +16,48 @@ class ExperienceView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final column =
-        max(1, (min(MediaQuery.of(context).size.width, 1000) / 350).floor());
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         SizedBox(
           height: 120,
         ),
-        Center(
-          child: ConstrainedBox(
-            constraints: BoxConstraints(maxWidth: 1000),
-            child: FutureBuilder<List<Showcase>>(
-                future: AppRepo.instance.getShowcases(),
-                builder: (context, snapshot) {
-                  List<Showcase> showcases = snapshot.data ?? [];
-                  return GridView.builder(
-                    shrinkWrap: true,
-                    physics: NeverScrollableScrollPhysics(),
-                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                      childAspectRatio: 1.2,
-                      mainAxisSpacing: 4,
-                      crossAxisSpacing: 4,
-                      crossAxisCount: column,
-                    ),
-                    itemBuilder: (context, index) {
-                      if (index >= showcases.length) {
-                        return Container(
-                          alignment: Alignment.center,
-                          color: Theme.of(context).canvasColor,
-                          child: Text(
-                            "404".toUpperCase(),
-                            style: Theme.of(context).textTheme.displaySmall,
-                          ),
-                        );
-                      }
-                      final showcase = showcases[index];
-                      return ShowcaseItemView(showcase: showcase);
-                    },
-                    itemCount: (showcases.length / column).ceil() * column,
-                  );
-                }),
+        Container(
+          height: 60,
+          decoration: BoxDecoration(
+              gradient: LinearGradient(
+                  colors: [Color(0x00C0392B), Color(0xffC0392B)],
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter)),
+        ),
+        Container(
+          color: Color(0xffC0392B),
+          child: Center(
+            child: ConstrainedBox(
+              constraints: BoxConstraints(maxWidth: 1000),
+              child: FutureBuilder<List<Experience>>(
+                  future: AppRepo.instance.getExperience(),
+                  builder: (context, snapshot) {
+                    List<Experience> experiences =
+                        normaliseData(snapshot.data ?? []);
+                    return Column(
+                      children: [
+                        ExperienceStartTile(
+                            experience: experiences.firstOrNull),
+                        ListView.builder(
+                            shrinkWrap: true,
+                            physics: NeverScrollableScrollPhysics(),
+                            itemBuilder: (context, index) {
+                              final experience = experiences[index];
+                              return ExperienceDetailTile(
+                                  experience: experience);
+                            },
+                            itemCount: experiences.length),
+                        ExperienceStartTile(experience: null),
+                      ],
+                    );
+                  }),
+            ),
           ),
         ),
         SizedBox(
@@ -64,206 +68,149 @@ class ExperienceView extends StatelessWidget {
   }
 }
 
-class ShowcaseItemView extends StatefulWidget {
-  const ShowcaseItemView({
-    Key? key,
-    required this.showcase,
-  }) : super(key: key);
+List<Experience> normaliseData(List<Experience> experiences) {
+  if (experiences.isEmpty) return experiences;
+  final newList = <Experience>[];
+  newList.add(experiences.first);
 
-  final Showcase showcase;
+  for (var i = 1; i < experiences.length; i++) {
+    final previous = experiences[i - 1];
+    final current = experiences[i];
+    final previousDate = previous.endDate.toDateTime();
+    final currentDate = current.startDate.toDateTime();
+    if (currentDate.difference(previousDate).inDays > 30)
+      newList.add(Experience(
+          startDate: previous.endDate,
+          endDate: current.startDate,
+          position: "Freelancer"));
+    newList.add(current);
+  }
 
-  @override
-  _ShowcaseItemViewState createState() => _ShowcaseItemViewState();
+  return newList;
 }
 
-class _ShowcaseItemViewState extends State<ShowcaseItemView>
-    with TickerProviderStateMixin {
-  late final AnimationController controller;
-  late final Animation<double> animation;
-  @override
-  void initState() {
-    controller =
-        AnimationController(vsync: this, duration: Duration(milliseconds: 200));
-    animation = Tween<double>(begin: 0.0, end: 1.0).animate(controller);
-    super.initState();
-  }
+class ExperienceStartTile extends StatelessWidget {
+  const ExperienceStartTile({Key? key, required this.experience})
+      : super(key: key);
 
+  final Experience? experience;
   @override
   Widget build(BuildContext context) {
-    return MouseRegion(
-      onEnter: (event) {
-        controller.forward();
-      },
-      onExit: (event) {
-        controller.reverse();
-      },
-      child: InkWell(
-        onTap: widget.showcase.actions?.isNotEmpty != true
-            ? null
-            : () => controller.forward(),
-        child: buildCard(context),
-      ),
-    );
-  }
-
-  // bool isHover = false;
-
-  Widget buildCard(BuildContext context) {
-    return Card(
-      shape: RoundedRectangleBorder(
-          // side: BorderSide(color: Theme.of(context).hintColor.withOpacity(1)),
-          ),
-      margin: EdgeInsets.zero,
-      child: AnimatedBuilder(
-        animation: animation,
-        builder: (context, child) => Stack(
-          children: [
-            Positioned(
-              left: -48 * animation.value,
-              right: -48 * animation.value,
-              top: -24 * animation.value,
-              child: AnimatedContainer(
-                duration: Duration(milliseconds: 200),
-                child: Image.network(
-                  widget.showcase.preview ?? "",
+    return TimelineTile(
+        alignment: TimelineAlign.center,
+        isFirst: experience != null,
+        isLast: experience == null,
+        beforeLineStyle: lineStyle,
+        afterLineStyle: lineStyle,
+        indicatorStyle: IndicatorStyle(
+            width: 200,
+            height: 40,
+            indicator: Center(
+              child: Container(
+                padding: EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                decoration: BoxDecoration(
+                    color: lineColor, borderRadius: BorderRadius.circular(16)),
+                child: Text(
+                  (experience?.startDate)?.toDateTime().toYearText() ??
+                      S.of(context).today,
+                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                      color: lineColor.computeLuminance() > 0.5
+                          ? Colors.black
+                          : Colors.white),
                 ),
               ),
-            ),
-            Positioned(
-              top: 0,
-              bottom: 0,
-              left: 0,
-              right: 0,
-              child: Column(
-                children: [
-                  Expanded(
-                    child: Visibility(
-                      visible: animation.value > 0,
-                      child: Opacity(
-                        opacity: animation.value,
-                        child: BackdropFilter(
-                          filter: ImageFilter.blur(sigmaX: 1, sigmaY: 1),
-                          child: Container(
-                            color: Colors.white54,
-                            child: Center(
-                              child:
-                                  ShowcaseItemAction(showcase: widget.showcase),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                  Card(
-                    margin: EdgeInsets.zero,
-                    shape: RoundedRectangleBorder(),
-                    child: Container(
-                      decoration: BoxDecoration(
-                          border: Border(top: BorderSide(color: Colors.white))),
-                      padding: EdgeInsets.fromLTRB(16, 16, 16, 16),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          Text(
-                            widget.showcase.title ?? "-",
-                            style: TextStyle(fontWeight: FontWeight.bold),
-                          ),
-                          Linkify(
-                            text: widget.showcase.description ?? "",
-                            onOpen: (link) async {
-                              if (await canLaunch(link.url)) {
-                                await launch(link.url);
-                              } else {}
-                            },
-                            style: Theme.of(context)
-                                .textTheme
-                                .titleSmall
-                                ?.copyWith(color: Theme.of(context).hintColor),
-                          ),
-                          SizedBox(
-                            height: 16,
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Wrap(
-                                spacing: 4,
-                                children: widget.showcase.tags
-                                        ?.map((e) => Chip(
-                                              backgroundColor: Colors.green,
-                                              padding: EdgeInsets.zero,
-                                              label: Text(e),
-                                            ))
-                                        .toList() ??
-                                    [],
-                              ),
-                              Wrap(
-                                spacing: 4,
-                                children: widget.showcase.platforms?.map((e) {
-                                      final code = int.tryParse(e.icon ?? "",
-                                              radix: 16) ??
-                                          0;
+            )));
+  }
+}
 
-                                      return Icon(IconData(code,
-                                          fontFamily: e.family,
-                                          fontPackage: e.package));
-                                    }).toList() ??
-                                    [],
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
-              ),
+class ExperienceDetailTile extends StatelessWidget {
+  const ExperienceDetailTile({Key? key, required this.experience})
+      : super(key: key);
+
+  final Experience experience;
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        TimelineTile(
+          alignment: TimelineAlign.center,
+          indicatorStyle: IndicatorStyle(
+              color: dotColor, padding: EdgeInsets.symmetric(vertical: 2)),
+          beforeLineStyle: lineStyle,
+          afterLineStyle: lineStyle,
+          startChild: Container(
+            padding: EdgeInsets.fromLTRB(16, 0, 16, 0),
+            child: Text(
+              experience.startDate.toDateTime().toMonthYearText(),
+              textAlign: TextAlign.end,
+              style: Theme.of(context).textTheme.titleLarge,
             ),
+          ),
+          endChild: Container(
+            padding: EdgeInsets.fromLTRB(16, 0, 16, 0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  experience.company?.name ?? "<Undefined>",
+                  style: Theme.of(context)
+                      .textTheme
+                      .headlineSmall!
+                      .copyWith(fontWeight: FontWeight.w600),
+                ),
+                Text(
+                  experience.position ?? "",
+                  style: Theme.of(context).textTheme.titleLarge,
+                )
+              ],
+            ),
+          ),
+        ),
+        TimelineTile(
+          alignment: TimelineAlign.center,
+          beforeLineStyle: lineStyle,
+          hasIndicator: false,
+          afterLineStyle: lineStyle,
+          endChild: ExperienceDetailView(
+            experience: experience,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class ExperienceDetailView extends StatelessWidget {
+  const ExperienceDetailView({Key? key, required this.experience})
+      : super(key: key);
+
+  final Experience experience;
+  @override
+  Widget build(BuildContext context) {
+    final textStyle = Theme.of(context).textTheme.titleLarge;
+    final startDate = experience.startDate.toDateTime();
+    final endDate = experience.endDate.toDateTime();
+
+    return Flexible(
+      flex: 1,
+      child: Container(
+        padding: EdgeInsets.fromLTRB(26, 4, 16, 0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text.rich(TextSpan(children: [
+              TextSpan(text: startDate.toMonthYearText(), style: textStyle),
+              TextSpan(
+                  text: " to ",
+                  style:
+                      textStyle!.copyWith(color: Theme.of(context).hintColor)),
+              TextSpan(text: endDate.toMonthYearText(), style: textStyle),
+            ])),
           ],
         ),
       ),
-    );
-  }
-}
-
-class ShowcaseItemAction extends StatelessWidget {
-  const ShowcaseItemAction({
-    Key? key,
-    required this.showcase,
-  }) : super(key: key);
-
-  final Showcase showcase;
-
-  @override
-  Widget build(BuildContext context) {
-    return Wrap(
-      children: showcase.actions?.map((e) {
-            final color = e.color == null
-                ? Colors.blueGrey
-                : Color(int.parse(e.color!, radix: 16));
-            return InkWell(
-              onTap: () => launch(e.url ?? ""),
-              child: Card(
-                clipBehavior: Clip.antiAlias,
-                shape: RoundedRectangleBorder(
-                    side: BorderSide(color: color, width: 4),
-                    borderRadius: BorderRadius.circular(8)),
-                color: Colors.white,
-                child: Container(
-                  color: color.withOpacity(0.1),
-                  padding: EdgeInsets.symmetric(horizontal: 24, vertical: 8),
-                  child: Text(
-                    e.label?.toUpperCase() ?? "",
-                    style: Theme.of(context)
-                        .textTheme
-                        .titleLarge
-                        ?.copyWith(color: color, fontWeight: FontWeight.bold),
-                  ),
-                ),
-              ),
-            );
-          }).toList() ??
-          [],
     );
   }
 }
