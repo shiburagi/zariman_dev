@@ -74,8 +74,8 @@ class _AppPagerState extends State<AppPager> with TickerProviderStateMixin {
             onNotification: (scrollNotification) {
               if (scrollNotification is ScrollStartNotification) {
               } else if (scrollNotification is ScrollUpdateNotification) {
-                widget.observer(
-                    keys.values.toList(), widget.scrollController.offset);
+                widget.observer(keys.values.toList(),
+                    widget.scrollController.offset, false);
                 if (!isAnimated) {
                   for (var i = keys.length - 1; i >= 0; i--) {
                     final path = widget.pages[i].path;
@@ -88,16 +88,8 @@ class _AppPagerState extends State<AppPager> with TickerProviderStateMixin {
                   }
                 }
               } else if (scrollNotification is ScrollEndNotification) {
-                // final currentRoute = widget.controller.currentRoute;
-                // if (!isAnimated &&
-                //     [RoutePath.me, RoutePath.showcase].contains(currentRoute))
-                //   Future(() async => {
-                //         await scrollController.animateTo(
-                //             currentRoute == RoutePath.me ? 0 : _meHeight,
-                //             duration: Duration(milliseconds: 500),
-                //             curve: Curves.easeInOut)
-                //       }).then((value) => {isAnimated = false});
-                // isAnimated = true;
+                widget.observer(
+                    keys.values.toList(), widget.scrollController.offset, true);
               }
 
               return true;
@@ -138,7 +130,8 @@ typedef BackgroundBuilder = List<Widget> Function(
 typedef AppPageAnimationBuider = Widget Function(
     BuildContext, GlobalKey key, WidgetBuilder);
 typedef RouteUpdater = void Function(String);
-typedef ScrollObserver = void Function(List<GlobalKey> keys, double offset);
+typedef ScrollObserver = void Function(
+    List<GlobalKey> keys, double offset, bool isStop);
 
 double? getPositionIndex(GlobalKey? key, {Offset offset = Offset.zero}) {
   try {

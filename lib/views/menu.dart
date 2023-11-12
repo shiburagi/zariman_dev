@@ -41,9 +41,6 @@ class _CardMenuState extends State<CardMenu>
       setState(f);
       final index =
           widget.menu.keys.toList().indexOf(widget.controller._currentRoute);
-      dev.log(
-          "widget.controller._currentRoute: ${widget.controller.currentRoute}");
-      dev.log("indexL: $index");
 
       _controller.animateTo(index * scale);
     };

@@ -1,16 +1,41 @@
 import 'dart:math';
 import 'dart:ui';
 
+import 'package:auto_animated/auto_animated.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_linkify/flutter_linkify.dart';
 import 'package:repositories/repositories.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-class ShowcaseView extends StatelessWidget {
+class ShowcaseView extends StatefulWidget {
   const ShowcaseView({
     Key? key,
   }) : super(key: key);
 
+  @override
+  State<ShowcaseView> createState() => _ShowcaseViewState();
+}
+
+class _ShowcaseViewState extends State<ShowcaseView> {
+  final options = LiveOptions(
+    // Start animation after (default zero)
+    delay: Duration(seconds: 0),
+
+    // Show each item through (default 250)
+    showItemInterval: Duration(milliseconds: 200),
+
+    // Animation duration (default 250)
+    showItemDuration: Duration(milliseconds: 200),
+
+    // Animations starts at 0.05 visible
+    // item fraction in sight (default 0.025)
+    visibleFraction: 0.05,
+
+    // Repeat the animation of the appearance
+    // when scrolling in the opposite direction (default false)
+    // To get the effect as in a showcase for ListView, set true
+    reAnimateOnVisibility: false,
+  );
   @override
   Widget build(BuildContext context) {
     final column =
@@ -28,16 +53,17 @@ class ShowcaseView extends StatelessWidget {
                 future: AppRepo.instance.getShowcases(),
                 builder: (context, snapshot) {
                   List<Showcase> showcases = snapshot.data ?? [];
-                  return GridView.builder(
+                  return LiveGrid.options(
+                    options: options,
                     shrinkWrap: true,
                     physics: NeverScrollableScrollPhysics(),
                     gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                       childAspectRatio: 1.2,
-                      mainAxisSpacing: 4,
-                      crossAxisSpacing: 4,
+                      mainAxisSpacing: 16,
+                      crossAxisSpacing: 16,
                       crossAxisCount: column,
                     ),
-                    itemBuilder: (context, index) {
+                    itemBuilder: (context, index, animation) {
                       if (index >= showcases.length) {
                         return Container(
                           alignment: Alignment.center,
@@ -49,7 +75,29 @@ class ShowcaseView extends StatelessWidget {
                         );
                       }
                       final showcase = showcases[index];
-                      return ShowcaseItemView(showcase: showcase);
+
+                      final grid = index % column.toDouble();
+                      final mid = (column - 1) / 2.0;
+
+                      double x = grid < mid
+                          ? -0.3
+                          : grid > mid
+                              ? 0.3
+                              : 0;
+                      double y = grid == mid ? -0.1 : 0;
+                      return FadeTransition(
+                          opacity: Tween<double>(
+                            begin: 0,
+                            end: 1,
+                          ).animate(animation),
+                          // And slide transition
+                          child: SlideTransition(
+                              position: Tween<Offset>(
+                                begin: Offset(x, y),
+                                end: Offset.zero,
+                              ).animate(animation),
+                              // Paste you Widget
+                              child: ShowcaseItemView(showcase: showcase)));
                     },
                     itemCount: (showcases.length / column).ceil() * column,
                   );

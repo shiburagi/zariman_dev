@@ -1,3 +1,4 @@
+import 'package:auto_animated/auto_animated.dart';
 import 'package:flutter/material.dart';
 import 'package:localize/generated/l10n.dart';
 import 'package:repositories/models/experience.dart';
@@ -9,11 +10,35 @@ const dotColor = Color(0XFFFA8072);
 const lineColor = Color(0xFFFFE4E1);
 const lineStyle = LineStyle(color: lineColor, thickness: 2);
 
-class ExperienceView extends StatelessWidget {
+class ExperienceView extends StatefulWidget {
   const ExperienceView({
     Key? key,
   }) : super(key: key);
 
+  @override
+  State<ExperienceView> createState() => _ExperienceViewState();
+}
+
+class _ExperienceViewState extends State<ExperienceView> {
+  final options = LiveOptions(
+    // Start animation after (default zero)
+    delay: Duration(seconds: 0),
+
+    // Show each item through (default 250)
+    showItemInterval: Duration(milliseconds: 200),
+
+    // Animation duration (default 250)
+    showItemDuration: Duration(milliseconds: 200),
+
+    // Animations starts at 0.05 visible
+    // item fraction in sight (default 0.025)
+    visibleFraction: 0.05,
+
+    // Repeat the animation of the appearance
+    // when scrolling in the opposite direction (default false)
+    // To get the effect as in a showcase for ListView, set true
+    reAnimateOnVisibility: false,
+  );
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -44,13 +69,26 @@ class ExperienceView extends StatelessWidget {
                       children: [
                         ExperienceStartTile(
                             experience: experiences.firstOrNull),
-                        ListView.builder(
+                        LiveList.options(
+                            options: options,
                             shrinkWrap: true,
                             physics: NeverScrollableScrollPhysics(),
-                            itemBuilder: (context, index) {
+                            itemBuilder: (context, index, animation) {
                               final experience = experiences[index];
-                              return ExperienceDetailTile(
-                                  experience: experience);
+                              return FadeTransition(
+                                  opacity: Tween<double>(
+                                    begin: 0,
+                                    end: 1,
+                                  ).animate(animation),
+                                  // And slide transition
+                                  child: SlideTransition(
+                                      position: Tween<Offset>(
+                                        begin: Offset(0, -0.1),
+                                        end: Offset.zero,
+                                      ).animate(animation),
+                                      // Paste you Widget
+                                      child: ExperienceDetailTile(
+                                          experience: experience)));
                             },
                             itemCount: experiences.length),
                         ExperienceStartTile(experience: null),

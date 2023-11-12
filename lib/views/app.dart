@@ -92,10 +92,24 @@ class _AppPageState extends State<AppPage> with TickerProviderStateMixin {
         if (!isAnimated) widget.controller.currentRoute = p0;
       },
       pages: pages ?? [],
-      observer: (keys, offset) {
+      observer: (keys, offset, isStop) {
         meHeight = getHeight(keys[0]) ?? meHeight;
-        double percent = offset / meHeight;
-        animationController.value = (percent);
+
+        if (isStop) {
+          final currentRoute = widget.controller.currentRoute;
+          if (!isAnimated && offset <= meHeight) {
+            Future(() async => {
+                  await scrollController.animateTo(
+                      currentRoute == RoutePath.me ? 0 : meHeight,
+                      duration: Duration(milliseconds: 500),
+                      curve: Curves.easeInOut)
+                }).then((value) => {isAnimated = false});
+            isAnimated = true;
+          }
+        } else {
+          double percent = offset / meHeight;
+          animationController.value = (percent);
+        }
       },
     );
   }
