@@ -1,0 +1,52 @@
+[
+    {
+        "company": {
+            "name": "InfoPro Sdn Bhd"
+        },
+        "startDate": "2014-09-01",
+        "endDate": "2014-11-01",
+        "position": "Mobile Application Developer (Internship)"
+    },
+    {
+        "company": {
+            "name": "GATES IT Solution Sdn Bhd"
+        },
+        "startDate": "2015-04-01",
+        "endDate": "2015-05-01",
+        "position": "Multimedia Analyst Programmer"
+    },
+    {
+        "company": {
+            "name": "Dattel Sdn Bhd"
+        },
+        "startDate": "2015-11-01",
+        "endDate": "2020-06-01",
+        "position": "Team Lead, Senior Android App Developer",
+        "summary":[
+            "Developed Multiple Android app",
+            "Developed Multiple Android app"
+        ]
+    },
+    {
+        "company": {
+            "name": "Kiple Sdn Bhd (GreenPacket Bhd)"
+        },
+        "startDate": "2020-08-01",
+        "endDate": "2022-05-01",
+        "position": "Senior Associate, Android Developer",
+        "summary":[
+            "Developed KipleCity App with Flutter Tech"
+        ]
+    },
+    {
+        "company": {
+            "name": "Xendit Sdn Bhd"
+        },
+        "startDate": "2022-05-01",
+        "endDate": null,
+        "position": "Mobile Engineer",
+        "summary":[
+            "Developed KipleCity App with Flutter Tech"
+        ]
+    }
+]
