@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:utils/utils.dart';
 
 final theme = ThemeData(
   fontFamily: "Barlow",
@@ -16,3 +17,17 @@ final darkTheme = ThemeData(
           primarySwatch: Colors.green, brightness: Brightness.dark)
       .copyWith(secondary: Color(0xffE74C3C)),
 );
+
+double pagesPadding(BuildContext context) {
+  return context.isMd
+      ? 160
+      : context.isXs
+          ? 60
+          : 80;
+}
+
+double sectionFontSize(BuildContext context) => context.isMd
+    ? 120
+    : context.isXs
+        ? 60
+        : 80;

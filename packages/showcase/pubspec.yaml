@@ -13,6 +13,8 @@ dependencies:
     sdk: flutter
   repositories:
     path: ../repositories
+  routes:
+    path: ../routes
   uikit:
     path: ../uikit
   localize:
