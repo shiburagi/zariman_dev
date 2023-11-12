@@ -47,61 +47,64 @@ class _ShowcaseViewState extends State<ShowcaseView> {
           height: 120,
         ),
         Center(
-          child: ConstrainedBox(
-            constraints: BoxConstraints(maxWidth: 1000),
-            child: FutureBuilder<List<Showcase>>(
-                future: AppRepo.instance.getShowcases(),
-                builder: (context, snapshot) {
-                  List<Showcase> showcases = snapshot.data ?? [];
-                  return LiveGrid.options(
-                    options: options,
-                    shrinkWrap: true,
-                    physics: NeverScrollableScrollPhysics(),
-                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                      childAspectRatio: 1.2,
-                      mainAxisSpacing: 16,
-                      crossAxisSpacing: 16,
-                      crossAxisCount: column,
-                    ),
-                    itemBuilder: (context, index, animation) {
-                      if (index >= showcases.length) {
-                        return Container(
-                          alignment: Alignment.center,
-                          color: Theme.of(context).canvasColor,
-                          child: Text(
-                            "404".toUpperCase(),
-                            style: Theme.of(context).textTheme.displaySmall,
-                          ),
-                        );
-                      }
-                      final showcase = showcases[index];
+          child: Container(
+            padding: EdgeInsets.symmetric(horizontal: 24),
+            child: ConstrainedBox(
+              constraints: BoxConstraints(maxWidth: 1000),
+              child: FutureBuilder<List<Showcase>>(
+                  future: AppRepo.instance.getShowcases(),
+                  builder: (context, snapshot) {
+                    List<Showcase> showcases = snapshot.data ?? [];
+                    return LiveGrid.options(
+                      options: options,
+                      shrinkWrap: true,
+                      physics: NeverScrollableScrollPhysics(),
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                        childAspectRatio: 1.2,
+                        mainAxisSpacing: 16,
+                        crossAxisSpacing: 16,
+                        crossAxisCount: column,
+                      ),
+                      itemBuilder: (context, index, animation) {
+                        if (index >= showcases.length) {
+                          return Container(
+                            alignment: Alignment.center,
+                            color: Theme.of(context).canvasColor,
+                            child: Text(
+                              "404".toUpperCase(),
+                              style: Theme.of(context).textTheme.displaySmall,
+                            ),
+                          );
+                        }
+                        final showcase = showcases[index];
 
-                      final grid = index % column.toDouble();
-                      final mid = (column - 1) / 2.0;
+                        final grid = index % column.toDouble();
+                        final mid = (column - 1) / 2.0;
 
-                      double x = grid < mid
-                          ? -0.3
-                          : grid > mid
-                              ? 0.3
-                              : 0;
-                      double y = grid == mid ? -0.1 : 0;
-                      return FadeTransition(
-                          opacity: Tween<double>(
-                            begin: 0,
-                            end: 1,
-                          ).animate(animation),
-                          // And slide transition
-                          child: SlideTransition(
-                              position: Tween<Offset>(
-                                begin: Offset(x, y),
-                                end: Offset.zero,
-                              ).animate(animation),
-                              // Paste you Widget
-                              child: ShowcaseItemView(showcase: showcase)));
-                    },
-                    itemCount: (showcases.length / column).ceil() * column,
-                  );
-                }),
+                        double x = grid < mid
+                            ? -0.3
+                            : grid > mid
+                                ? 0.3
+                                : 0;
+                        double y = grid == mid ? -0.1 : 0;
+                        return FadeTransition(
+                            opacity: Tween<double>(
+                              begin: 0,
+                              end: 1,
+                            ).animate(animation),
+                            // And slide transition
+                            child: SlideTransition(
+                                position: Tween<Offset>(
+                                  begin: Offset(x, y),
+                                  end: Offset.zero,
+                                ).animate(animation),
+                                // Paste you Widget
+                                child: ShowcaseItemView(showcase: showcase)));
+                      },
+                      itemCount: (showcases.length / column).ceil() * column,
+                    );
+                  }),
+            ),
           ),
         ),
         SizedBox(

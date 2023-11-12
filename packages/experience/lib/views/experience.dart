@@ -9,6 +9,7 @@ import 'package:utils/utils.dart';
 const dotColor = Color(0XFFFA8072);
 const lineColor = Color(0xFFFFE4E1);
 const lineStyle = LineStyle(color: lineColor, thickness: 2);
+const experienceBackgroundColor = Color(0xFFD2691E);
 
 class ExperienceView extends StatefulWidget {
   const ExperienceView({
@@ -50,13 +51,13 @@ class _ExperienceViewState extends State<ExperienceView> {
         Container(
           height: 60,
           decoration: BoxDecoration(
-              gradient: LinearGradient(
-                  colors: [Color(0x00C0392B), Color(0xffC0392B)],
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter)),
+              gradient: LinearGradient(colors: [
+            experienceBackgroundColor.withOpacity(0),
+            experienceBackgroundColor
+          ], begin: Alignment.topCenter, end: Alignment.bottomCenter)),
         ),
         Container(
-          color: Color(0xffC0392B),
+          color: experienceBackgroundColor,
           child: Center(
             child: ConstrainedBox(
               constraints: BoxConstraints(maxWidth: 1000),
@@ -191,7 +192,7 @@ class ExperienceDetailTile extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  experience.company?.name ?? "<Undefined>",
+                  experience.company?.name ?? "[404]",
                   style: Theme.of(context)
                       .textTheme
                       .headlineSmall!

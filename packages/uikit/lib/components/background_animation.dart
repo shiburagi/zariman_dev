@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-class TitleAnimation extends StatefulWidget {
-  const TitleAnimation({
+class BackgroundAnimation extends StatefulWidget {
+  const BackgroundAnimation({
     Key? key,
     required this.observerKey,
     required this.sectionFontSize,
@@ -16,10 +16,10 @@ class TitleAnimation extends StatefulWidget {
   final double offset;
 
   @override
-  State<TitleAnimation> createState() => _TitleAnimationState();
+  State<BackgroundAnimation> createState() => _BackgroundAnimationState();
 }
 
-class _TitleAnimationState extends State<TitleAnimation>
+class _BackgroundAnimationState extends State<BackgroundAnimation>
     with TickerProviderStateMixin {
   late final AnimationController animationController;
   late final AnimationController opacityController;
@@ -52,8 +52,8 @@ class _TitleAnimationState extends State<TitleAnimation>
           final maxTo = boxHeight - height * 0.4;
           if (offset >= -maxTo) {
             final percent = (y / height);
-            animationController.value = percent;
-            opacityController.value = percent;
+            animationController.value = (percent * 1.3).clamp(0, 1);
+            opacityController.value = (percent * 1).clamp(0, 1);
           } else {
             final maxBound = height * 0.8;
             final y = (maxTo + offset).abs().clamp(0, maxBound).toDouble();
@@ -108,15 +108,14 @@ class _TitleAnimationState extends State<TitleAnimation>
               animation: opacityController,
               builder: (context, child) {
                 double curveValue = (animationController.value);
+                double opacityValue = Curves.easeInOut
+                    .transform((opacityController.value).clamp(0, 1));
                 return Positioned(
                   left: 0,
-                  right: 32, //+ width * curveValue * 0.2,
-                  top: widget.offset -
-                      boxHeight +
-                      4 +
-                      (curveValue).clamp(0, 2) * boxHeight,
+                  right: 0, //+ width * curveValue * 0.2,
+                  top: boxHeight - (4 + (curveValue).clamp(0, 2) * boxHeight),
                   child: Opacity(
-                    opacity: (opacityController.value).clamp(0, 1),
+                    opacity: opacityValue,
                     child: widget.child,
                   ),
                 );

@@ -227,11 +227,12 @@ class _MeViewState extends State<MeView> with SingleTickerProviderStateMixin {
                 crossAxisAlignment: WrapCrossAlignment.center,
                 children: me?.socials
                         ?.map((e) => FutureBuilder<bool>(
-                            future: canLaunch(e.url ?? ""),
+                            future: canLaunchUrl(Uri.parse(e.url ?? "")),
                             builder: (context, snapshot) =>
                                 snapshot.data == true
                                     ? InkWell(
-                                        onTap: () => launch(e.url ?? ""),
+                                        onTap: () =>
+                                            launchUrl(Uri.parse(e.url ?? "")),
                                         child: Card(
                                           color: Theme.of(context).canvasColor,
                                           child: Container(

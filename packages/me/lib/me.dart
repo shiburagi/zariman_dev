@@ -71,12 +71,12 @@ class MeAppPage {
 
   Widget mePageAnimationBuider(
       BuildContext context, GlobalKey key, WidgetBuilder builder) {
-    final size = getSize(key);
-    final width = size?.width ?? 0;
-    final height = size?.height ?? 0;
     return AnimatedBuilder(
       animation: animation3,
       builder: (context, child) {
+        final size = getSize(key);
+        final width = size?.width ?? 0;
+        final height = size?.height ?? 0;
         double dx = (-Curves.fastOutSlowIn.transform(animation3.value) * width)
             .clamp(-width, 0.0);
 

@@ -30,7 +30,11 @@ class _CardMenuState extends State<CardMenu>
     with SingleTickerProviderStateMixin {
   late final AnimationController _controller;
   double get size => context.isXs ? 20 : 24;
-  double get space => context.isXs ? 16 : 32;
+  double get space => context.isXs
+      ? 16
+      : context.isSm
+          ? 24
+          : 32;
   @override
   void initState() {
     _controller =
@@ -60,7 +64,8 @@ class _CardMenuState extends State<CardMenu>
       mainAxisSize: MainAxisSize.min,
       children: [
         Card(
-          elevation: 4,
+          shadowColor: Theme.of(context).dividerColor,
+          elevation: 8,
           clipBehavior: Clip.antiAliasWithSaveLayer,
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),

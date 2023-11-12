@@ -39,7 +39,6 @@ class _SplashpageState extends State<Splashpage> {
         builder: (context, snapshot) {
           final isLoad = snapshot.data == null;
 
-          print("$isLoad  ${snapshot.data}");
           return Stack(
             children: [
               isLoad
