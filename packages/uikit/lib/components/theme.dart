@@ -31,3 +31,9 @@ double sectionFontSize(BuildContext context) => context.isMd
     : context.isXs
         ? 48
         : 80;
+
+const dotColor = Color(0XFFFA8072);
+const lineColor = Color(0xFFFFE4E1);
+const defaultShowcaseButtonColor = Color(0XFFFA8072);
+const showcaseBackgroundColor = Color(0xffC0392B);
+const experienceBackgroundColor = Color(0xFFD2691E);

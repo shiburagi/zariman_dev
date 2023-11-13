@@ -131,7 +131,7 @@ Widget buildBackground(Animation<double> opacityAnimation,
           top: height - height * value1,
           bottom: -height + height * value1,
           child: Container(
-            color: Color(0xffC0392B).withOpacity(
+            color: showcaseBackgroundColor.withOpacity(
               value,
             ),
           ),

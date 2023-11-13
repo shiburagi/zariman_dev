@@ -7,10 +7,7 @@ import 'package:timeline_tile/timeline_tile.dart';
 import 'package:uikit/uikit.dart';
 import 'package:utils/utils.dart';
 
-const dotColor = Color(0XFFFA8072);
-const lineColor = Color(0xFFFFE4E1);
 const lineStyle = LineStyle(color: lineColor, thickness: 2);
-const experienceBackgroundColor = Color(0xFFD2691E);
 
 TextStyle primaryTextStyle(BuildContext context) {
   final textTheme = Theme.of(context).textTheme;
@@ -59,7 +56,7 @@ class _ExperienceViewState extends State<ExperienceView> {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         SizedBox(
-          height: sectionFontSize(context) * 3,
+          height: sectionFontSize(context) * 1.2,
         ),
         Container(
           height: 60,

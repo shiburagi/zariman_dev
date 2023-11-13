@@ -42,7 +42,7 @@ class _AppPageState extends State<AppPage> with TickerProviderStateMixin {
       duration: Duration(milliseconds: 200),
       upperBound: 1,
     );
-
+    initScrollListener();
     final urlPath = locationPath;
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       Future.delayed(Duration(milliseconds: 300), () {

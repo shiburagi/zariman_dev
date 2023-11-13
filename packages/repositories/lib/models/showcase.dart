@@ -1,45 +1,61 @@
 class Showcase {
-  String? preview;
   String? title;
+  String? preview;
   String? description;
   List<String>? tags;
   List<Actions>? actions;
   List<Platforms>? platforms;
 
   Showcase(
-      {this.preview,
-      this.title,
+      {this.title,
+      this.preview,
       this.description,
       this.tags,
       this.actions,
       this.platforms});
 
   Showcase.fromJson(Map<String, dynamic> json) {
-    this.preview = json["preview"];
-    this.title = json["title"];
-    this.description = json["description"];
-    this.tags = json["tags"] == null ? null : List<String>.from(json["tags"]);
-    this.actions = json["actions"] == null
-        ? null
-        : (json["actions"] as List).map((e) => Actions.fromJson(e)).toList();
-    this.platforms = json["platforms"] == null
-        ? null
-        : (json["platforms"] as List)
-            .map((e) => Platforms.fromJson(e))
-            .toList();
+    if (json["title"] is String) {
+      title = json["title"];
+    }
+    if (json["preview"] is String) {
+      preview = json["preview"];
+    }
+    if (json["description"] is String) {
+      description = json["description"];
+    }
+    if (json["tags"] is List) {
+      tags = json["tags"] == null ? null : List<String>.from(json["tags"]);
+    }
+    if (json["actions"] is List) {
+      actions = json["actions"] == null
+          ? null
+          : (json["actions"] as List).map((e) => Actions.fromJson(e)).toList();
+    }
+    if (json["platforms"] is List) {
+      platforms = json["platforms"] == null
+          ? null
+          : (json["platforms"] as List)
+              .map((e) => Platforms.fromJson(e))
+              .toList();
+    }
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data["preview"] = this.preview;
-    data["title"] = this.title;
-    data["description"] = this.description;
-    if (this.tags != null) data["tags"] = this.tags;
-    if (this.actions != null)
-      data["actions"] = this.actions?.map((e) => e.toJson()).toList();
-    if (this.platforms != null)
-      data["platforms"] = this.platforms?.map((e) => e.toJson()).toList();
-    return data;
+    final Map<String, dynamic> _data = <String, dynamic>{};
+    _data["title"] = title;
+    _data["preview"] = preview;
+    _data["description"] = description;
+    if (tags != null) {
+      _data["tags"] = tags;
+    }
+    if (actions != null) {
+      _data["actions"] = actions?.map((e) => e.toJson()).toList();
+    }
+    if (platforms != null) {
+      _data["platforms"] = platforms?.map((e) => e.toJson()).toList();
+    }
+    return _data;
   }
 }
 
@@ -51,38 +67,68 @@ class Platforms {
   Platforms({this.icon, this.family, this.package});
 
   Platforms.fromJson(Map<String, dynamic> json) {
-    this.icon = json["icon"];
-    this.family = json["family"];
-    this.package = json["package"];
+    if (json["icon"] is String) {
+      icon = json["icon"];
+    }
+    if (json["family"] is String) {
+      family = json["family"];
+    }
+    if (json["package"] is String) {
+      package = json["package"];
+    }
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data["icon"] = this.icon;
-    data["family"] = this.family;
-    data["package"] = this.package;
-    return data;
+    final Map<String, dynamic> _data = <String, dynamic>{};
+    _data["icon"] = icon;
+    _data["family"] = family;
+    _data["package"] = package;
+    return _data;
   }
 }
 
 class Actions {
   String? label;
   String? url;
-  String? color;
+  List<String>? colors;
 
-  Actions({this.label, this.url, this.color});
+  Actions({this.label, this.url, this.colors});
 
   Actions.fromJson(Map<String, dynamic> json) {
-    this.label = json["label"];
-    this.url = json["url"];
-    this.color = json["color"];
+    if (json["label"] is String) {
+      label = json["label"];
+    }
+    if (json["url"] is String) {
+      url = json["url"];
+    }
+    if (json["colors"] is List) {
+      colors =
+          json["colors"] == null ? null : List<String>.from(json["colors"]);
+    }
+  }
+
+  static List<Actions> fromList(List<Map<String, dynamic>> list) {
+    return list.map((map) => Actions.fromJson(map)).toList();
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data["label"] = this.label;
-    data["url"] = this.url;
-    data["color"] = this.color;
-    return data;
+    final Map<String, dynamic> _data = <String, dynamic>{};
+    _data["label"] = label;
+    _data["url"] = url;
+    if (colors != null) {
+      _data["colors"] = colors;
+    }
+    return _data;
   }
+
+  Actions copyWith({
+    String? label,
+    String? url,
+    List<String>? colors,
+  }) =>
+      Actions(
+        label: label ?? this.label,
+        url: url ?? this.url,
+        colors: colors ?? this.colors,
+      );
 }

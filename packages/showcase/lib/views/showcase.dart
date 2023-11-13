@@ -290,26 +290,34 @@ class ShowcaseItemAction extends StatelessWidget {
   Widget build(BuildContext context) {
     return Wrap(
       children: showcase.actions?.map((e) {
-            final color = e.color == null
-                ? Colors.blueGrey
-                : Color(int.parse(e.color!, radix: 16));
+            List<Color> colors =
+                e.colors?.map((e) => Color(int.parse(e, radix: 16))).toList() ??
+                    [defaultShowcaseButtonColor, defaultShowcaseButtonColor];
+
+            if (colors.length == 1) {
+              colors = [...colors, colors.first];
+            }
             return InkWell(
-              onTap: () => launch(e.url ?? ""),
+              onTap: () => launchUrl(Uri.parse(e.url ?? "")),
               child: Card(
                 clipBehavior: Clip.antiAlias,
                 shape: RoundedRectangleBorder(
-                    side: BorderSide(color: color, width: 4),
+                    // side: BorderSide(color: color, width: 4),
                     borderRadius: BorderRadius.circular(8)),
-                color: Colors.white,
                 child: Container(
-                  color: color.withOpacity(0.1),
+                  decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                          colors: colors,
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight)),
                   padding: EdgeInsets.symmetric(horizontal: 24, vertical: 8),
                   child: Text(
                     e.label?.toUpperCase() ?? "",
-                    style: Theme.of(context)
-                        .textTheme
-                        .titleLarge
-                        ?.copyWith(color: color, fontWeight: FontWeight.bold),
+                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                        color: colors.first.computeLuminance() > 0.3
+                            ? Colors.black
+                            : Colors.white,
+                        fontWeight: FontWeight.bold),
                   ),
                 ),
               ),

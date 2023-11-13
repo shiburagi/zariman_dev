@@ -33,7 +33,9 @@
             {
                 "label": "download",
                 "url": "https://www.uplabs.com/posts/payment-flow-payment-flow-066c958e-af5b-4bd3-8fbd-e2fdce44d7b4",
-                "color": "ff000000"
+                "colors": [
+                    "ff000000"
+                ]
             }
         ],
         "tags": [
@@ -122,12 +124,16 @@
             {
                 "label": "Install",
                 "url": "https://marketplace.visualstudio.com/items?itemName=MuhammadNorzariman.jsontodart",
-                "color": "ffaaaaaa"
+                "colors": [
+                    "ffaaaaaa"
+                ]
             },
             {
                 "label": "Github",
                 "url": "https://github.com/shiburagi/JsonToDart",
-                "color": "ff000000"
+                "colors": [
+                    "ff000000"
+                ]
             }
         ],
         "platforms": [
