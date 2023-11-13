@@ -5,6 +5,7 @@ import 'package:auto_animated/auto_animated.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_linkify/flutter_linkify.dart';
 import 'package:repositories/repositories.dart';
+import 'package:uikit/components/theme.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class ShowcaseView extends StatefulWidget {
@@ -44,7 +45,7 @@ class _ShowcaseViewState extends State<ShowcaseView> {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         SizedBox(
-          height: 120,
+          height: sectionFontSize(context),
         ),
         Center(
           child: Container(

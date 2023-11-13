@@ -41,13 +41,14 @@ class _AppPagerState extends State<AppPager> with TickerProviderStateMixin {
   Widget build(BuildContext context) {
     List<Widget> children = List.generate(widget.pages.length, (index) {
       final page = widget.pages[index];
-      final childAnimation =
-          page.builder ?? (context, key, b) => page.content(context);
+      AppPageAnimationBuider childAnimation = page.builder ??
+          (context, key, scrollController, b) => page.content(context);
       final key = page.key;
       keys[index] = key;
       return childAnimation(
         context,
         key,
+        widget.scrollController,
         (context) {
           final child = ConstrainedBox(
             key: key,
@@ -127,8 +128,8 @@ typedef AppPageTitleBuider = Widget Function(
 
 typedef BackgroundBuilder = List<Widget> Function(
     BuildContext context, GlobalKey key, ScrollController controller);
-typedef AppPageAnimationBuider = Widget Function(
-    BuildContext, GlobalKey key, WidgetBuilder);
+typedef AppPageAnimationBuider = Widget Function(BuildContext, GlobalKey key,
+    ScrollController scrollController, WidgetBuilder);
 typedef RouteUpdater = void Function(String);
 typedef ScrollObserver = void Function(
     List<GlobalKey> keys, double offset, bool isStop);

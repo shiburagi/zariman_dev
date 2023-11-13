@@ -29,5 +29,5 @@ double pagesPadding(BuildContext context) {
 double sectionFontSize(BuildContext context) => context.isMd
     ? 120
     : context.isXs
-        ? 60
+        ? 48
         : 80;

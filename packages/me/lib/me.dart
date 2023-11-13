@@ -8,7 +8,6 @@ import 'package:routes/routes.dart';
 import 'package:uikit/uikit.dart';
 import 'package:utils/utils.dart';
 
-export 'package:me/pages/me.dart';
 export 'package:me/views/me.dart';
 export 'package:me/views/me_title.dart';
 
@@ -69,8 +68,8 @@ class MeAppPage {
         });
   }
 
-  Widget mePageAnimationBuider(
-      BuildContext context, GlobalKey key, WidgetBuilder builder) {
+  Widget mePageAnimationBuider(BuildContext context, GlobalKey key,
+      ScrollController scrollController, WidgetBuilder builder) {
     return AnimatedBuilder(
       animation: animation3,
       builder: (context, child) {

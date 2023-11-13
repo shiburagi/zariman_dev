@@ -107,13 +107,17 @@ class _BackgroundAnimationState extends State<BackgroundAnimation>
           return AnimatedBuilder(
               animation: opacityController,
               builder: (context, child) {
-                double curveValue = (animationController.value);
+                double c1 = Curves.easeInOut
+                    .transform(animationController.value.clamp(0, 1));
+                double c2 = Curves.easeInOut
+                    .transform((animationController.value - 1).clamp(0, 1));
+                double curveValue = c1 + c2;
                 double opacityValue = Curves.easeInOut
                     .transform((opacityController.value).clamp(0, 1));
                 return Positioned(
                   left: 0,
                   right: 0, //+ width * curveValue * 0.2,
-                  top: boxHeight - (4 + (curveValue).clamp(0, 2) * boxHeight),
+                  top: boxHeight - ((curveValue).clamp(0, 2) * boxHeight),
                   child: Opacity(
                     opacity: opacityValue,
                     child: widget.child,

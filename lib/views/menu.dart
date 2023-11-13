@@ -1,5 +1,3 @@
-import 'dart:developer' as dev;
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -73,22 +71,31 @@ class _CardMenuState extends State<CardMenu>
             children: [
               AnimatedBuilder(
                 animation: _controller,
-                builder: (context, child) => Positioned(
-                    top: _controller.value *
-                        (size + space + 1) *
-                        (menuCount - 1),
-                    left: 0,
-                    right: 0,
-                    height: size + space,
-                    child: Container(
-                      decoration: BoxDecoration(
-                          color: Theme.of(context).colorScheme.secondary,
-                          borderRadius: BorderRadius.circular(24),
-                          gradient: LinearGradient(colors: [
-                            Colors.pink,
-                            Colors.red,
-                          ])),
-                    )),
+                builder: (context, child) {
+                  final scale = 1.0 / (size - 1);
+                  double radius = 8;
+                  if (_controller.value < scale)
+                    radius = 24 - 16 * (_controller.value / scale);
+                  else if (_controller.value > 1.0 - scale)
+                    radius = 8 + 16 * (1 - (1 - _controller.value) / scale);
+
+                  return Positioned(
+                      top: _controller.value *
+                          (size + space + 1) *
+                          (menuCount - 1),
+                      left: 0,
+                      right: 0,
+                      height: size + space,
+                      child: Container(
+                        decoration: BoxDecoration(
+                            color: Theme.of(context).colorScheme.secondary,
+                            borderRadius: BorderRadius.circular(radius),
+                            gradient: LinearGradient(colors: [
+                              Colors.pink,
+                              Colors.red,
+                            ])),
+                      ));
+                },
               ),
               Container(
                 height: menuHeight,

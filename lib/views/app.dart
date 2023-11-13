@@ -6,7 +6,7 @@ import 'package:repositories/repositories.dart';
 import 'package:routes/routes.dart';
 import 'package:showcase/showcase.dart' as showcaseClass;
 import 'package:uikit/uikit.dart';
-import 'dart:html' as html;
+import 'package:utils/utils.dart';
 
 Future loadDependentLibrary(BuildContext context) async {
   // await meClass.loadLibrary();
@@ -43,11 +43,14 @@ class _AppPageState extends State<AppPage> with TickerProviderStateMixin {
       upperBound: 1,
     );
 
-    initScrollListener();
+    final urlPath = locationPath;
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       Future.delayed(Duration(milliseconds: 300), () {
-        widget.controller.currentRoute =
-            html.window.location.pathname ?? RoutePath.me;
+        var page = pages?.firstWhere(
+          (element) => urlPath?.endsWith(element.path) == true,
+          orElse: () => pages![0],
+        );
+        widget.controller.currentRoute = page?.path ?? RoutePath.me;
       });
     });
   }
@@ -56,7 +59,7 @@ class _AppPageState extends State<AppPage> with TickerProviderStateMixin {
 
   void initScrollListener() {
     widget.controller.onChanged = (value) async {
-      html.window.history.pushState({}, '', '$value');
+      updateLocation(value);
       isAnimated = true;
       final page = pages?.firstWhere(
         (element) => element.path == value,
@@ -97,7 +100,7 @@ class _AppPageState extends State<AppPage> with TickerProviderStateMixin {
         meHeight = getHeight(keys[0]) ?? meHeight;
 
         if (isStop) {
-          final currentRoute = html.window.location.pathname;
+          final currentRoute = widget.controller.currentRoute;
           final pages = this.pages;
           if (pages != null)
             for (var i = pages.length - 1; i > -0; i--) {

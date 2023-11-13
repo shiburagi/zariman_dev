@@ -5,7 +5,6 @@ import 'package:showcase/views/showcase.dart';
 import 'package:showcase/views/showcase_title.dart';
 import 'package:uikit/uikit.dart';
 
-export 'package:showcase/pages/showcase.dart';
 export 'package:showcase/views/showcase.dart';
 export 'package:showcase/views/showcase_title.dart';
 
@@ -24,4 +23,4 @@ AppPageData buildShowcasePageData() => AppPageData(
           alignment: Alignment.center,
           child: ShowcaseView(),
         ),
-    builder: (context, key, builder) => builder(context));
+    builder: (context, key, scrollController, builder) => builder(context));

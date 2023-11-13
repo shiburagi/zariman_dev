@@ -4,12 +4,25 @@ import 'package:localize/generated/l10n.dart';
 import 'package:repositories/models/experience.dart';
 import 'package:repositories/repositories.dart';
 import 'package:timeline_tile/timeline_tile.dart';
+import 'package:uikit/uikit.dart';
 import 'package:utils/utils.dart';
 
 const dotColor = Color(0XFFFA8072);
 const lineColor = Color(0xFFFFE4E1);
 const lineStyle = LineStyle(color: lineColor, thickness: 2);
 const experienceBackgroundColor = Color(0xFFD2691E);
+
+TextStyle primaryTextStyle(BuildContext context) {
+  final textTheme = Theme.of(context).textTheme;
+  return (context.isXs ? textTheme.titleLarge : textTheme.headlineSmall) ??
+      TextStyle();
+}
+
+TextStyle secondaryTextStyle(BuildContext context) {
+  final textTheme = Theme.of(context).textTheme;
+  return (context.isXs ? textTheme.titleMedium : textTheme.titleLarge) ??
+      TextStyle();
+}
 
 class ExperienceView extends StatefulWidget {
   const ExperienceView({
@@ -46,7 +59,7 @@ class _ExperienceViewState extends State<ExperienceView> {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         SizedBox(
-          height: 120,
+          height: sectionFontSize(context) * 3,
         ),
         Container(
           height: 60,
@@ -76,20 +89,10 @@ class _ExperienceViewState extends State<ExperienceView> {
                             physics: NeverScrollableScrollPhysics(),
                             itemBuilder: (context, index, animation) {
                               final experience = experiences[index];
-                              return FadeTransition(
-                                  opacity: Tween<double>(
-                                    begin: 0,
-                                    end: 1,
-                                  ).animate(animation),
-                                  // And slide transition
-                                  child: SlideTransition(
-                                      position: Tween<Offset>(
-                                        begin: Offset(0, -0.1),
-                                        end: Offset.zero,
-                                      ).animate(animation),
-                                      // Paste you Widget
-                                      child: ExperienceDetailTile(
-                                          experience: experience)));
+                              return ExperienceDetailTile(
+                                experience: experience,
+                                animation: animation,
+                              );
                             },
                             itemCount: experiences.length),
                         ExperienceStartTile(experience: null),
@@ -152,7 +155,7 @@ class ExperienceStartTile extends StatelessWidget {
                 child: Text(
                   (experience?.startDate)?.toDateTime().toYearText() ??
                       S.of(context).today,
-                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                  style: secondaryTextStyle(context).copyWith(
                       color: lineColor.computeLuminance() > 0.5
                           ? Colors.black
                           : Colors.white),
@@ -163,10 +166,13 @@ class ExperienceStartTile extends StatelessWidget {
 }
 
 class ExperienceDetailTile extends StatelessWidget {
-  const ExperienceDetailTile({Key? key, required this.experience})
+  const ExperienceDetailTile(
+      {Key? key, required this.experience, required this.animation})
       : super(key: key);
 
   final Experience experience;
+  final Animation<double> animation;
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -177,32 +183,35 @@ class ExperienceDetailTile extends StatelessWidget {
               color: dotColor, padding: EdgeInsets.symmetric(vertical: 2)),
           beforeLineStyle: lineStyle,
           afterLineStyle: lineStyle,
-          startChild: Container(
-            padding: EdgeInsets.fromLTRB(16, 0, 16, 0),
-            child: Text(
-              experience.startDate.toDateTime().toMonthYearText(),
-              textAlign: TextAlign.end,
-              style: Theme.of(context).textTheme.titleLarge,
+          startChild: buildAnimation(
+            child: Container(
+              padding: EdgeInsets.fromLTRB(16, 0, 16, 0),
+              child: Text(
+                experience.startDate.toDateTime().toMonthYearText(),
+                textAlign: TextAlign.end,
+                style: secondaryTextStyle(context),
+              ),
             ),
           ),
-          endChild: Container(
-            padding: EdgeInsets.fromLTRB(16, 0, 16, 0),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  experience.company?.name ?? "[404]",
-                  style: Theme.of(context)
-                      .textTheme
-                      .headlineSmall!
-                      .copyWith(fontWeight: FontWeight.w600),
-                ),
-                Text(
-                  experience.position ?? "",
-                  style: Theme.of(context).textTheme.titleLarge,
-                )
-              ],
+          endChild: buildAnimation(
+            xOffset: 0.2,
+            child: Container(
+              padding: EdgeInsets.fromLTRB(16, 0, 16, 0),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    experience.company?.name ?? "[404]",
+                    style: primaryTextStyle(context)
+                        .copyWith(fontWeight: FontWeight.w600),
+                  ),
+                  Text(
+                    experience.position ?? "",
+                    style: secondaryTextStyle(context),
+                  )
+                ],
+              ),
             ),
           ),
         ),
@@ -211,45 +220,53 @@ class ExperienceDetailTile extends StatelessWidget {
           beforeLineStyle: lineStyle,
           hasIndicator: false,
           afterLineStyle: lineStyle,
-          endChild: ExperienceDetailView(
-            experience: experience,
+          endChild: buildAnimation(
+            xOffset: 0.2,
+            child: buildTimeframe(context),
           ),
         ),
       ],
     );
   }
-}
 
-class ExperienceDetailView extends StatelessWidget {
-  const ExperienceDetailView({Key? key, required this.experience})
-      : super(key: key);
-
-  final Experience experience;
-  @override
-  Widget build(BuildContext context) {
-    final textStyle = Theme.of(context).textTheme.titleLarge;
+  Widget buildTimeframe(BuildContext context) {
+    final textStyle = secondaryTextStyle(context);
     final startDate = experience.startDate.toDateTime();
-    final endDate = experience.endDate.toDateTime();
+    final endDate = experience.endDate?.toDateTime();
 
-    return Flexible(
-      flex: 1,
-      child: Container(
-        padding: EdgeInsets.fromLTRB(26, 4, 16, 0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text.rich(TextSpan(children: [
-              TextSpan(text: startDate.toMonthYearText(), style: textStyle),
-              TextSpan(
-                  text: " to ",
-                  style:
-                      textStyle!.copyWith(color: Theme.of(context).hintColor)),
-              TextSpan(text: endDate.toMonthYearText(), style: textStyle),
-            ])),
-          ],
-        ),
+    return Container(
+      padding: EdgeInsets.fromLTRB(26, 4, 16, 0),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text.rich(TextSpan(children: [
+            TextSpan(text: startDate.toMonthYearText(), style: textStyle),
+            TextSpan(
+                text: " to ",
+                style: textStyle!.copyWith(color: Theme.of(context).hintColor)),
+            TextSpan(
+                text: endDate?.toMonthYearText() ?? S.of(context).today,
+                style: textStyle),
+          ])),
+        ],
       ),
     );
+  }
+
+  Widget buildAnimation({required Widget child, double xOffset = -0.2}) {
+    return FadeTransition(
+        opacity: Tween<double>(
+          begin: 0,
+          end: 1,
+        ).animate(animation),
+        // And slide transition
+        child: SlideTransition(
+          position: Tween<Offset>(
+            begin: Offset(xOffset, 0),
+            end: Offset.zero,
+          ).animate(animation),
+          child: child,
+        ));
   }
 }

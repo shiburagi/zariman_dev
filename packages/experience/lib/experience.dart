@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:routes/routes.dart';
 import 'package:uikit/uikit.dart';
 
-export 'package:experience/pages/experience.dart';
 export 'package:experience/views/experience.dart';
 export 'package:experience/views/experience_title.dart';
 
@@ -37,4 +36,6 @@ AppPageData buillExperiencePageData() => AppPageData(
             data: darkTheme,
           ),
         ),
-    builder: (context, key, builder) => builder(context));
+    builder: (context, key, scrollController, builder) {
+      return builder(context);
+    });

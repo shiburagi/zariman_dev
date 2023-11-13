@@ -24,10 +24,10 @@ class _SplashpageState extends State<Splashpage> {
     return true;
   }
 
-  final menu = {
+  final menus = {
     RoutePath.me: AppMenuItem(S.current.me, FontAwesomeIcons.faceMehBlank),
     RoutePath.showcase:
-        AppMenuItem(S.current.showcase, FontAwesomeIcons.desktop),
+        AppMenuItem(S.current.showcase, FontAwesomeIcons.laptopCode),
     RoutePath.experience:
         AppMenuItem(S.current.experience, FontAwesomeIcons.briefcase),
   };
@@ -51,9 +51,12 @@ class _SplashpageState extends State<Splashpage> {
                   : Positioned(
                       left: 8,
                       top: 8,
-                      child: CardMenu(
-                        menu: menu,
-                        controller: widget.controller,
+                      child: SafeArea(
+                        left: true,
+                        child: CardMenu(
+                          menu: menus,
+                          controller: widget.controller,
+                        ),
                       ),
                     ),
               Positioned.fill(

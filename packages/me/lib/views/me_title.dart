@@ -49,13 +49,8 @@ class MeTitleState extends State<MeTitle> {
         builder: (context, child) {
           double curveValue = Curves.easeInOut.transform(animation3.value);
           return Positioned(
-            right: 32, // + width * curveValue * 0.2,
-            top: -(context.isMd
-                    ? 108
-                    : context.isXs
-                        ? 55
-                        : 75) +
-                curveValue * boxHeight,
+            right: titleGap(context), // + width * curveValue * 0.2,
+            top: -(sectionFontSize - 5) + curveValue * boxHeight,
             child: Opacity(
               opacity: (1 - curveValue * 2).clamp(0, 1),
               child: Text.rich(

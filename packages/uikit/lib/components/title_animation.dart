@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:utils/utils.dart';
 
 class TitleAnimation extends StatefulWidget {
   const TitleAnimation({
@@ -107,16 +108,22 @@ class _TitleAnimationState extends State<TitleAnimation>
           return AnimatedBuilder(
               animation: opacityController,
               builder: (context, child) {
-                double curveValue = (animationController.value);
+                double c1 = Curves.easeInOut
+                    .transform(animationController.value.clamp(0, 1));
+                double c2 = Curves.easeInOut
+                    .transform((animationController.value - 1).clamp(0, 1));
+                double topCurveValue = c1 + c2;
+                double opacityCurveValue = Curves.easeInOut
+                    .transform((opacityController.value).clamp(0, 1));
                 return Positioned(
                   left: 0,
-                  right: 32, //+ width * curveValue * 0.2,
+                  right: titleGap(context), //+ width * curveValue * 0.2,
                   top: widget.offset -
                       boxHeight +
                       4 +
-                      (curveValue).clamp(0, 2) * boxHeight,
+                      (topCurveValue).clamp(0, 2) * boxHeight,
                   child: Opacity(
-                    opacity: (opacityController.value).clamp(0, 1),
+                    opacity: opacityCurveValue,
                     child: widget.child,
                   ),
                 );
@@ -124,3 +131,5 @@ class _TitleAnimationState extends State<TitleAnimation>
         });
   }
 }
+
+double titleGap(BuildContext context) => context.isXs ? 16 : 32;
