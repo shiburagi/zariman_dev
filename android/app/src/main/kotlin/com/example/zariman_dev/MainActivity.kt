@@ -1,4 +1,4 @@
-package com.example.personal_website
+package com.example.zariman_dev
 
 import io.flutter.embedding.android.FlutterActivity
 
