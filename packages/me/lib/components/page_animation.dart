@@ -1,23 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:uikit/uikit.dart';
 
-class MeTitle extends StatefulWidget {
-  const MeTitle(
-      {Key? key, required this.observerKey, required this.scrollController})
+class PageAnimation extends StatefulWidget {
+  const PageAnimation(
+      {Key? key,
+      required this.observerKey,
+      required this.scrollController,
+      required this.builder})
       : super(key: key);
 
   final GlobalKey observerKey;
   final ScrollController scrollController;
+  final WidgetBuilder builder;
 
   @override
-  State<MeTitle> createState() => _MeTitleState();
+  State<PageAnimation> createState() => _PageAnimationState();
 }
 
-class _MeTitleState extends State<MeTitle> with TickerProviderStateMixin {
+class _PageAnimationState extends State<PageAnimation>
+    with TickerProviderStateMixin {
   late final AnimationController animationController;
 
-  late final Animation<double> opacityAnimation;
-  late final Animation<double> progressAnimation;
   late final Animation<double> translationAnimation;
 
   @override
@@ -30,10 +33,6 @@ class _MeTitleState extends State<MeTitle> with TickerProviderStateMixin {
       upperBound: 1,
     );
 
-    opacityAnimation = Tween<double>(begin: 0, end: 1).animate(CurvedAnimation(
-        parent: animationController, curve: Interval(0.6, 0.8)));
-    progressAnimation = Tween<double>(begin: 0, end: 1).animate(CurvedAnimation(
-        parent: animationController, curve: Interval(0.0, 0.5)));
     translationAnimation =
         Tween<double>(begin: 0, end: 1).animate(CurvedAnimation(
       parent: animationController,
@@ -89,35 +88,32 @@ class _MeTitleState extends State<MeTitle> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    return buildHelloTitle(sectionFontSize(context));
+    return mePageAnimationBuider();
   }
 
-  AnimatedBuilder buildHelloTitle(double sectionFontSize) {
+  Widget mePageAnimationBuider() {
     return AnimatedBuilder(
-        animation: translationAnimation,
-        builder: (context, child) {
-          double curveValue =
-              Curves.easeInOut.transform(translationAnimation.value);
-          return Positioned(
-            right: titleGap(context), // + width * curveValue * 0.2,
-            top: -(sectionFontSize - 5) + curveValue * boxHeight,
-            child: Opacity(
-              opacity: (1 - curveValue * 2).clamp(0, 1),
-              child: Text.rich(
-                TextSpan(children: [
-                  TextSpan(
-                    text: "World!:\n".toUpperCase(),
-                    style: TextStyle(color: Theme.of(context).hintColor),
-                  ),
-                  TextSpan(
-                    text: "_Hello".toUpperCase(),
-                  ),
-                ]),
-                textAlign: TextAlign.right,
-                style: TextStyle(fontSize: sectionFontSize, height: 1),
-              ),
-            ),
-          );
-        });
+      animation: translationAnimation,
+      builder: (context, child) {
+        final size = getSize(widget.observerKey);
+        final width = size?.width ?? 0;
+        final height = size?.height ?? 0;
+        double dx =
+            (-Curves.fastOutSlowIn.transform(translationAnimation.value) *
+                    width)
+                .clamp(-width, 0.0);
+
+        double dy = translationAnimation.value * height;
+        if (height - pagesPadding(context) >
+            MediaQuery.of(context).size.height) {
+          dx = 0;
+          dy = 0;
+        }
+        return Transform.translate(
+          offset: Offset(dx, dy),
+          child: widget.builder(context),
+        );
+      },
+    );
   }
 }

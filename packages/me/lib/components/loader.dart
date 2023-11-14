@@ -1,8 +1,10 @@
-import 'package:flutter/material.dart';
-import 'package:uikit/uikit.dart';
+import 'dart:math';
 
-class MeTitle extends StatefulWidget {
-  const MeTitle(
+import 'package:flutter/material.dart';
+import 'package:utils/utils.dart';
+
+class Loader extends StatefulWidget {
+  const Loader(
       {Key? key, required this.observerKey, required this.scrollController})
       : super(key: key);
 
@@ -10,15 +12,14 @@ class MeTitle extends StatefulWidget {
   final ScrollController scrollController;
 
   @override
-  State<MeTitle> createState() => _MeTitleState();
+  State<Loader> createState() => _LoaderState();
 }
 
-class _MeTitleState extends State<MeTitle> with TickerProviderStateMixin {
+class _LoaderState extends State<Loader> with TickerProviderStateMixin {
   late final AnimationController animationController;
 
   late final Animation<double> opacityAnimation;
   late final Animation<double> progressAnimation;
-  late final Animation<double> translationAnimation;
 
   @override
   void initState() {
@@ -34,11 +35,6 @@ class _MeTitleState extends State<MeTitle> with TickerProviderStateMixin {
         parent: animationController, curve: Interval(0.6, 0.8)));
     progressAnimation = Tween<double>(begin: 0, end: 1).animate(CurvedAnimation(
         parent: animationController, curve: Interval(0.0, 0.5)));
-    translationAnimation =
-        Tween<double>(begin: 0, end: 1).animate(CurvedAnimation(
-      parent: animationController,
-      curve: Interval(0.0, 1.0),
-    ));
 
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       double height = MediaQuery.of(context).size.height;
@@ -89,32 +85,61 @@ class _MeTitleState extends State<MeTitle> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    return buildHelloTitle(sectionFontSize(context));
+    return buildLoader();
   }
 
-  AnimatedBuilder buildHelloTitle(double sectionFontSize) {
+  AnimatedBuilder buildLoader() {
     return AnimatedBuilder(
-        animation: translationAnimation,
+        animation: opacityAnimation,
         builder: (context, child) {
           double curveValue =
-              Curves.easeInOut.transform(translationAnimation.value);
+              Curves.easeInOut.transform(progressAnimation.value);
           return Positioned(
-            right: titleGap(context), // + width * curveValue * 0.2,
-            top: -(sectionFontSize - 5) + curveValue * boxHeight,
+            left: 32,
+            right: 32,
+            bottom: 0,
+            top: 0,
             child: Opacity(
-              opacity: (1 - curveValue * 2).clamp(0, 1),
-              child: Text.rich(
-                TextSpan(children: [
-                  TextSpan(
-                    text: "World!:\n".toUpperCase(),
-                    style: TextStyle(color: Theme.of(context).hintColor),
+              opacity: curveValue == 0 ? 0 : 1 - opacityAnimation.value,
+              child: Container(
+                alignment: Alignment.center,
+                width: MediaQuery.of(context).size.height / 2,
+                margin: EdgeInsets.only(bottom: opacityAnimation.value * 60),
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(
+                    maxWidth: max(
+                        min(MediaQuery.of(context).size.height,
+                                MediaQuery.of(context).size.width) *
+                            0.7,
+                        500),
                   ),
-                  TextSpan(
-                    text: "_Hello".toUpperCase(),
+                  child: AspectRatio(
+                    aspectRatio: 1,
+                    child: Stack(
+                      children: [
+                        Positioned.fill(
+                          child: Container(
+                            child: CircularProgressIndicator(
+                              value: curveValue,
+                              strokeWidth: 1,
+                              color: Theme.of(context).hintColor,
+                            ),
+                          ),
+                        ),
+                        Center(
+                          child: Text(
+                            curveValue >= 1
+                                ? "Completed".toUpperCase()
+                                : "${(curveValue * 100).clamp(0, 100).toStringAsFixed(1)}%",
+                            style: context.isMd
+                                ? Theme.of(context).textTheme.displayMedium
+                                : Theme.of(context).textTheme.headlineMedium,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                ]),
-                textAlign: TextAlign.right,
-                style: TextStyle(fontSize: sectionFontSize, height: 1),
+                ),
               ),
             ),
           );

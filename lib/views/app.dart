@@ -75,18 +75,59 @@ class _AppPageState extends State<AppPage> with TickerProviderStateMixin {
     };
   }
 
+  void scrollObserver(keys, offset, isStop) {
+    meHeight = getHeight(keys[0]) ?? meHeight;
+
+    if (isStop) {
+      final currentRoute = widget.controller.currentRoute;
+      final pages = this.pages;
+      if (pages != null)
+        for (var i = pages.length - 1; i > -0; i--) {
+          final page = pages[i];
+          final y = getPositionIndex(page.key) ?? 0;
+          if (!isAnimated && y > 0 && y < sectionFontSize(context) * 3) {
+            Future(() async => {
+                  await scrollController.animateTo(y + offset,
+                      duration: Duration(milliseconds: 500),
+                      curve: Curves.easeInOut)
+                }).then((value) => {isAnimated = false});
+            return;
+          }
+        }
+      if (!isAnimated && offset <= meHeight) {
+        Future(() async => {
+              await scrollController.animateTo(
+                  currentRoute == RoutePath.me ? 0 : meHeight,
+                  duration: Duration(milliseconds: 500),
+                  curve: Curves.easeInOut)
+            }).then((value) => {isAnimated = false});
+      }
+    } else {
+      double percent = offset / meHeight;
+      animationController.value = (percent);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
-    return buildMainBody(width);
+    return Stack(
+      children: [
+        buildMainBody(width),
+        meClass.UpButton(
+            observerKey: pages![0].key,
+            scrollController: scrollController,
+            onUpClicked: (e) {
+              widget.controller.currentRoute = e;
+            })
+      ],
+    );
   }
 
   List<AppPageData>? pages;
   Widget buildMainBody(double width) {
     pages ??= [
-      meClass.MeAppPage.create(animationController, (p0) {
-        widget.controller.currentRoute = p0;
-      }).build(),
+      meClass.buildMePageData(),
       showcaseClass.buildShowcasePageData(),
       experienceClass.buillExperiencePageData()
     ];
@@ -96,38 +137,7 @@ class _AppPageState extends State<AppPage> with TickerProviderStateMixin {
         if (!isAnimated) widget.controller.currentRoute = p0;
       },
       pages: pages ?? [],
-      observer: (keys, offset, isStop) {
-        meHeight = getHeight(keys[0]) ?? meHeight;
-
-        if (isStop) {
-          final currentRoute = widget.controller.currentRoute;
-          final pages = this.pages;
-          if (pages != null)
-            for (var i = pages.length - 1; i > -0; i--) {
-              final page = pages[i];
-              final y = getPositionIndex(page.key) ?? 0;
-              if (!isAnimated && y > 0 && y < sectionFontSize(context) * 3) {
-                Future(() async => {
-                      await scrollController.animateTo(y + offset,
-                          duration: Duration(milliseconds: 500),
-                          curve: Curves.easeInOut)
-                    }).then((value) => {isAnimated = false});
-                return;
-              }
-            }
-          if (!isAnimated && offset <= meHeight) {
-            Future(() async => {
-                  await scrollController.animateTo(
-                      currentRoute == RoutePath.me ? 0 : meHeight,
-                      duration: Duration(milliseconds: 500),
-                      curve: Curves.easeInOut)
-                }).then((value) => {isAnimated = false});
-          }
-        } else {
-          double percent = offset / meHeight;
-          animationController.value = (percent);
-        }
-      },
+      observer: scrollObserver,
     );
   }
 }

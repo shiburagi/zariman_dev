@@ -128,8 +128,8 @@ typedef AppPageTitleBuider = Widget Function(
 
 typedef BackgroundBuilder = List<Widget> Function(
     BuildContext context, GlobalKey key, ScrollController controller);
-typedef AppPageAnimationBuider = Widget Function(BuildContext, GlobalKey key,
-    ScrollController scrollController, WidgetBuilder);
+typedef AppPageAnimationBuider = Widget Function(BuildContext context,
+    GlobalKey key, ScrollController scrollController, WidgetBuilder builder);
 typedef RouteUpdater = void Function(String);
 typedef ScrollObserver = void Function(
     List<GlobalKey> keys, double offset, bool isStop);

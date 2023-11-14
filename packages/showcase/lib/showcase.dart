@@ -17,6 +17,17 @@ AppPageData buildShowcasePageData() => AppPageData(
         sectionFontSize: sectionFontSize(context),
       );
     },
+    background: (context, key, controller) => [
+          BackgroundAnimation(
+              observerKey: key,
+              sectionFontSize: sectionFontSize(context),
+              scrollController: controller,
+              child: Container(
+                color: showcaseBackgroundColor,
+                width: MediaQuery.of(context).size.width,
+                height: MediaQuery.of(context).size.height,
+              ))
+        ],
     content: (context) => Container(
           padding: EdgeInsets.only(
               top: pagesPadding(context), bottom: pagesPadding(context)),

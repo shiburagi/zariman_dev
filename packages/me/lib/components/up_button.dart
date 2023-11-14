@@ -1,24 +1,29 @@
 import 'package:flutter/material.dart';
+import 'package:routes/routes.dart';
 import 'package:uikit/uikit.dart';
+import 'package:utils/utils.dart';
 
-class MeTitle extends StatefulWidget {
-  const MeTitle(
-      {Key? key, required this.observerKey, required this.scrollController})
+class UpButton extends StatefulWidget {
+  const UpButton(
+      {Key? key,
+      required this.observerKey,
+      required this.scrollController,
+      required this.onUpClicked})
       : super(key: key);
 
   final GlobalKey observerKey;
   final ScrollController scrollController;
+  final RouteUpdater onUpClicked;
 
   @override
-  State<MeTitle> createState() => _MeTitleState();
+  State<UpButton> createState() => _UpButtonState();
 }
 
-class _MeTitleState extends State<MeTitle> with TickerProviderStateMixin {
+class _UpButtonState extends State<UpButton> with TickerProviderStateMixin {
   late final AnimationController animationController;
 
   late final Animation<double> opacityAnimation;
   late final Animation<double> progressAnimation;
-  late final Animation<double> translationAnimation;
 
   @override
   void initState() {
@@ -34,11 +39,6 @@ class _MeTitleState extends State<MeTitle> with TickerProviderStateMixin {
         parent: animationController, curve: Interval(0.6, 0.8)));
     progressAnimation = Tween<double>(begin: 0, end: 1).animate(CurvedAnimation(
         parent: animationController, curve: Interval(0.0, 0.5)));
-    translationAnimation =
-        Tween<double>(begin: 0, end: 1).animate(CurvedAnimation(
-      parent: animationController,
-      curve: Interval(0.0, 1.0),
-    ));
 
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       double height = MediaQuery.of(context).size.height;
@@ -89,32 +89,43 @@ class _MeTitleState extends State<MeTitle> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    return buildHelloTitle(sectionFontSize(context));
+    return buildUpButton();
   }
 
-  AnimatedBuilder buildHelloTitle(double sectionFontSize) {
+  AnimatedBuilder buildUpButton() {
+    double height =
+        getHeight(widget.observerKey) ?? MediaQuery.of(context).size.height;
     return AnimatedBuilder(
-        animation: translationAnimation,
+        animation: opacityAnimation,
         builder: (context, child) {
           double curveValue =
-              Curves.easeInOut.transform(translationAnimation.value);
+              Curves.easeInOut.transform(progressAnimation.value);
           return Positioned(
-            right: titleGap(context), // + width * curveValue * 0.2,
-            top: -(sectionFontSize - 5) + curveValue * boxHeight,
-            child: Opacity(
-              opacity: (1 - curveValue * 2).clamp(0, 1),
-              child: Text.rich(
-                TextSpan(children: [
-                  TextSpan(
-                    text: "World!:\n".toUpperCase(),
-                    style: TextStyle(color: Theme.of(context).hintColor),
+            right: 0,
+            bottom: 0 + height * curveValue,
+            child: Center(
+              child: IgnorePointer(
+                ignoring: opacityAnimation.value > 0.2,
+                child: Opacity(
+                  opacity: (1 - curveValue * 2).clamp(0, 1),
+                  child: InkWell(
+                    onTap: () => widget.onUpClicked(RoutePath.showcase),
+                    child: Container(
+                      decoration: BoxDecoration(
+                          color: Theme.of(context).canvasColor.withOpacity(0.1),
+                          border: Border(
+                            top: BorderSide(color: Theme.of(context).hintColor),
+                            left: BorderSide(
+                                color:
+                                    Theme.of(context).hintColor.withOpacity(1)),
+                          )),
+                      child: Icon(
+                        Icons.expand_less,
+                        size: context.isXs ? 40 : 48,
+                      ),
+                    ),
                   ),
-                  TextSpan(
-                    text: "_Hello".toUpperCase(),
-                  ),
-                ]),
-                textAlign: TextAlign.right,
-                style: TextStyle(fontSize: sectionFontSize, height: 1),
+                ),
               ),
             ),
           );

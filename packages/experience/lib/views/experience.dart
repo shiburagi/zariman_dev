@@ -99,6 +99,14 @@ class _ExperienceViewState extends State<ExperienceView> {
             ),
           ),
         ),
+        Container(
+          height: 60,
+          decoration: BoxDecoration(
+              gradient: LinearGradient(colors: [
+            experienceBackgroundColor,
+            experienceBackgroundColor.withOpacity(0),
+          ], begin: Alignment.topCenter, end: Alignment.bottomCenter)),
+        ),
         SizedBox(
           height: 48,
         )
