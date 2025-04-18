@@ -7,7 +7,7 @@
           "YTAZRVVYUC.co.xendit.business.dev"
         ],
         "paths": [
-          "/device_verification/*"
+          "*"
         ],
         "components": [
           {
