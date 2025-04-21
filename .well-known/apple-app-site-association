@@ -1,25 +1,25 @@
 {
-  "applinks": {
-    "apps": [],
-    "details": [
-      {
-        "appIDs": [
-          "YTAZRVVYUC.co.xendit.business.dev"
-        ],
-        "paths": [
-          "*"
-        ],
-        "components": [
-          {
-            "/": "*"
-          }
+    "applinks": {
+        "apps": [],
+        "details": [
+            {
+                "appIDs": [
+                    "YTAZRVVYUC.co.xendit.business.dev"
+                ],
+                "paths": [
+                    "device_verification/*"
+                ],
+                "components": [
+                    {
+                        "/": "*"
+                    }
+                ]
+            }
         ]
-      }
-    ]
-  },
-  "webcredentials": {
-    "apps": [
-      "YTAZRVVYUC.co.xendit.business.dev"
-    ]
-  }
+    },
+    "webcredentials": {
+        "apps": [
+            "YTAZRVVYUC.co.xendit.business.dev"
+        ]
+    }
 }
