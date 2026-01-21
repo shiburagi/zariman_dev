@@ -1,0 +1,25 @@
+name: zariman_dev
+packages:
+  - packages/*
+  - ./
+ 
+command:
+  bootstrap:
+    # It seems so that running "pub get" in parallel has some issues (like
+    # https://github.com/dart-lang/pub/issues/3404). Disabling this feature
+    # makes the CI much more stable.
+    runPubGetInParallel: false
+    usePubspecOverrides: true
+
+scripts:
+  install-package:
+    exec: flutter pub get --directory
+  install:
+    steps:
+      - melos install-package 
+  upgrade:
+    exec: 
+      orderDependents: true
+      concurrency: 1
+    run: flutter pub upgrade --directory
+  

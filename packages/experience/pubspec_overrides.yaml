@@ -1,0 +1,12 @@
+# melos_managed_dependency_overrides: localize,repositories,routes,uikit,utils
+dependency_overrides:
+  localize:
+    path: ../localize
+  repositories:
+    path: ../repositories
+  routes:
+    path: ../routes
+  uikit:
+    path: ../uikit
+  utils:
+    path: ../utils

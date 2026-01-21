@@ -3,6 +3,7 @@ import 'package:utils/utils.dart';
 
 final theme = ThemeData(
   fontFamily: "Barlow",
+  useMaterial3: false,
   brightness: Brightness.light,
   colorScheme: ColorScheme.fromSwatch(
           primarySwatch: Colors.green, brightness: Brightness.light)

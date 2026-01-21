@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_web_plugins/flutter_web_plugins.dart';
 import 'package:localize/localize.dart';
 import 'package:personal_website/pages/splash.dart';
 import 'package:personal_website/views/menu.dart';
 import 'package:uikit/uikit.dart';
 
 void main() {
+  usePathUrlStrategy();
   runApp(MyApp());
 }
 
@@ -15,7 +17,6 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final GlobalKey<NavigatorState> parentNavKey = GlobalKey();
-    final GlobalKey<NavigatorState> key = GlobalKey();
     return BlocProvider(
       create: (context) => SettingsBloc(),
       child: BlocBuilder<SettingsBloc, ThemeMode>(

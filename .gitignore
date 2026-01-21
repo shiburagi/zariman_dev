@@ -44,3 +44,6 @@ app.*.map.json
 /android/app/profile
 /android/app/release
 *.lock
+
+# FVM Version Cache
+.fvm/

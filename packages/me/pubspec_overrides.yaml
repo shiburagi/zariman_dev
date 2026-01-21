@@ -1,0 +1,10 @@
+# melos_managed_dependency_overrides: repositories,routes,uikit,utils
+dependency_overrides:
+  repositories:
+    path: ../repositories
+  routes:
+    path: ../routes
+  uikit:
+    path: ../uikit
+  utils:
+    path: ../utils
