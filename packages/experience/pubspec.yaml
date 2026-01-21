@@ -20,7 +20,7 @@ dependencies:
     path: ../uikit
   utils:
     path: ../utils
-  url_launcher: ^6.0.8
+  url_launcher: ^6.3.2
   flutter_linkify: ^6.0.0
   font_awesome_flutter: ^10.6.0
   auto_animated: ^3.0.0

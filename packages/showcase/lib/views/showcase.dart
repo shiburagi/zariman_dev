@@ -1,5 +1,4 @@
 import 'dart:math';
-import 'dart:ui';
 
 import 'package:auto_animated/auto_animated.dart';
 import 'package:flutter/material.dart';
@@ -142,17 +141,17 @@ class _ShowcaseItemViewState extends State<ShowcaseItemView> {
       child: AnimatedContainer(
         duration: Duration(milliseconds: 200),
         curve: Curves.easeOut,
-        transform: Matrix4.identity()..translate(0, isHovered ? -12.0 : 0),
+        transform: Matrix4.translationValues(0.0, isHovered ? -12.0 : 0.0, 0.0),
         decoration: BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-            colors: [color.withOpacity(0.9), color],
+            colors: [color.withAlpha((0.9 * 255).toInt()), color],
           ),
           borderRadius: BorderRadius.circular(24),
           boxShadow: [
             BoxShadow(
-              color: color.withOpacity(0.4),
+              color: color.withAlpha((0.4 * 255).toInt()),
               blurRadius: isHovered ? 24 : 12,
               offset: Offset(0, isHovered ? 12 : 8),
             ),
@@ -186,7 +185,7 @@ class _ShowcaseItemViewState extends State<ShowcaseItemView> {
                       Container(
                         decoration: BoxDecoration(
                           border: Border.all(
-                            color: Colors.white.withOpacity(0.2),
+                            color: Colors.white.withAlpha((0.2 * 255).toInt()),
                             width: 1,
                           ),
                           gradient: LinearGradient(
@@ -194,7 +193,7 @@ class _ShowcaseItemViewState extends State<ShowcaseItemView> {
                             end: Alignment.bottomCenter,
                             colors: [
                               Colors.transparent,
-                              Colors.black.withOpacity(0.1),
+                              Colors.black.withAlpha((0.1 * 255).toInt()),
                             ],
                           ),
                         ),
@@ -246,7 +245,9 @@ class _ShowcaseItemViewState extends State<ShowcaseItemView> {
                                     fontPackage: e.package,
                                   ),
                                   size: 16,
-                                  color: Colors.white.withOpacity(0.8),
+                                  color: Colors.white.withAlpha(
+                                    (0.8 * 255).toInt(),
+                                  ),
                                 ),
                               );
                             }).toList(),
@@ -263,12 +264,12 @@ class _ShowcaseItemViewState extends State<ShowcaseItemView> {
                         maxLines: 3,
                         overflow: TextOverflow.ellipsis,
                         onOpen: (link) async {
-                          if (await canLaunch(link.url)) {
-                            await launch(link.url);
+                          if (await canLaunchUrl(Uri.parse(link.url))) {
+                            await launchUrl(Uri.parse(link.url));
                           }
                         },
                         style: theme.textTheme.bodyMedium?.copyWith(
-                          color: Colors.white.withOpacity(0.85),
+                          color: Colors.white.withAlpha((0.85 * 255).toInt()),
                           height: 1.4,
                         ),
                         linkStyle: theme.textTheme.bodyMedium?.copyWith(
@@ -298,10 +299,14 @@ class _ShowcaseItemViewState extends State<ShowcaseItemView> {
                                       vertical: 4,
                                     ),
                                     decoration: BoxDecoration(
-                                      color: Colors.white.withOpacity(0.2),
+                                      color: Colors.white.withAlpha(
+                                        (0.2 * 255).toInt(),
+                                      ),
                                       borderRadius: BorderRadius.circular(12),
                                       border: Border.all(
-                                        color: Colors.white.withOpacity(0.1),
+                                        color: Colors.white.withAlpha(
+                                          (0.1 * 255).toInt(),
+                                        ),
                                       ),
                                     ),
                                     child: Text(
@@ -365,8 +370,8 @@ class ShowcaseItemAction extends StatelessWidget {
 
           return InkWell(
             onTap: () async {
-              if (await canLaunch(e.url ?? "")) {
-                await launch(e.url ?? "");
+              if (await canLaunchUrl(Uri.parse(e.url ?? ""))) {
+                await launchUrl(Uri.parse(e.url ?? ""));
               }
             },
             borderRadius: BorderRadius.circular(20),
@@ -377,7 +382,7 @@ class ShowcaseItemAction extends StatelessWidget {
                 borderRadius: BorderRadius.circular(20),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.1),
+                    color: Colors.black.withAlpha((0.1 * 255).toInt()),
                     blurRadius: 4,
                     offset: Offset(0, 2),
                   ),

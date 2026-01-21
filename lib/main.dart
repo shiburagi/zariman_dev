@@ -7,6 +7,9 @@ import 'package:personal_website/views/menu.dart';
 import 'package:uikit/uikit.dart';
 
 void main() {
+  FlutterError.onError = (details) {
+    FlutterError.presentError(details);
+  };
   usePathUrlStrategy();
   runApp(MyApp());
 }

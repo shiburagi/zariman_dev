@@ -8,7 +8,11 @@
             "name": "personal_website",
             "request": "launch",
             "type": "dart",
-            "program": "lib/main.dart"
+            "program": "lib/main.dart",
+            "args": [
+                "--wasm",
+                "--track-widget-creation"
+            ]
         },
         {
             "name": "personal_website (profile mode)",

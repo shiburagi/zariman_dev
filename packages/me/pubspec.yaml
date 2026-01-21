@@ -19,7 +19,7 @@ dependencies:
   uikit:
     path: ../uikit
   font_awesome_flutter: ^10.6.0
-  url_launcher: ^6.0.8
+  url_launcher: ^6.3.2
   styled_text: ^8.1.0
 
 dev_dependencies:
