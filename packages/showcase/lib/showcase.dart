@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:routes/routes.dart';
 import 'package:showcase/views/showcase.dart';
 import 'package:showcase/views/showcase_title.dart';
+import 'package:showcase/views/tetris_background.dart';
 import 'package:uikit/uikit.dart';
 
 export 'package:showcase/views/showcase.dart';
@@ -26,6 +27,7 @@ AppPageData buildShowcasePageData() => AppPageData(
                 color: showcaseBackgroundColor,
                 width: MediaQuery.of(context).size.width,
                 height: MediaQuery.of(context).size.height,
+                child: const TetrisBackground(),
               ))
         ],
     content: (context) => Container(

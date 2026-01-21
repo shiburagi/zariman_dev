@@ -3,9 +3,8 @@ description: A new Flutter package project.
 version: 0.0.1
 homepage:
 publish_to: none
-
 environment:
-  sdk: ">=2.12.0 <3.0.0"
+  sdk: ^3.9.2
   flutter: ">=1.17.0"
 
 dependencies:
@@ -23,7 +22,7 @@ dependencies:
     path: ../utils
   url_launcher: ^6.0.8
   flutter_linkify: ^6.0.0
-  font_awesome_flutter: ^10.6.0 
+  font_awesome_flutter: ^10.6.0
   auto_animated: ^3.0.0
   timeline_tile: ^2.0.0
 

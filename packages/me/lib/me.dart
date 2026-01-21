@@ -3,6 +3,7 @@ import 'package:me/components/loader.dart';
 import 'package:me/components/page_animation.dart';
 import 'package:me/views/me_title.dart';
 import 'package:me/views/me.dart';
+import 'package:me/views/ping_pong_background.dart';
 import 'package:repositories/repo/app.dart';
 import 'package:routes/routes.dart';
 import 'package:uikit/uikit.dart';
@@ -17,15 +18,27 @@ AppPageData buildMePageData() {
     title: (context, key, scrollController) {
       return MeTitle(observerKey: key, scrollController: scrollController);
     },
-    background: (context, key, scrollController) =>
-        [Loader(observerKey: key, scrollController: scrollController)],
+    background: (context, key, scrollController) => [
+      Container(
+        color: Color(0xFF55E6C1),
+        width: MediaQuery.of(context).size.width,
+        height: MediaQuery.of(context).size.height,
+        child: const PingPongBackground(),
+      ),
+      Loader(observerKey: key, scrollController: scrollController),
+    ],
     content: (context) => Container(
       padding: EdgeInsets.only(
-          top: pagesPadding(context), bottom: pagesPadding(context)),
+        top: pagesPadding(context),
+        bottom: pagesPadding(context),
+      ),
       alignment: Alignment.center,
       child: MeView(me: AppRepo.instance.me!),
     ),
     builder: (context, key, scrollController, builder) => PageAnimation(
-        observerKey: key, scrollController: scrollController, builder: builder),
+      observerKey: key,
+      scrollController: scrollController,
+      builder: builder,
+    ),
   );
 }

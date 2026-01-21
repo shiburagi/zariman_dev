@@ -8,10 +8,20 @@ import 'package:repositories/repositories.dart';
 import 'package:uikit/components/theme.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+// Vibrant palette for a "poster" art look
+final List<Color> showcasePalette = [
+  Color(0xFF5C6BC0), // Indigo
+  Color(0xFFEC407A), // Pink
+  Color(0xFFFFA726), // Orange
+  Color(0xFF26A69A), // Teal
+  Color(0xFF7E57C2), // Deep Purple
+  Color(0xFFEF5350), // Red
+  Color(0xFF42A5F5), // Blue
+  Color(0xFF66BB6A), // Green
+];
+
 class ShowcaseView extends StatefulWidget {
-  const ShowcaseView({
-    Key? key,
-  }) : super(key: key);
+  const ShowcaseView({Key? key}) : super(key: key);
 
   @override
   State<ShowcaseView> createState() => _ShowcaseViewState();
@@ -19,98 +29,86 @@ class ShowcaseView extends StatefulWidget {
 
 class _ShowcaseViewState extends State<ShowcaseView> {
   final options = LiveOptions(
-    // Start animation after (default zero)
     delay: Duration(seconds: 0),
-
-    // Show each item through (default 250)
-    showItemInterval: Duration(milliseconds: 200),
-
-    // Animation duration (default 250)
-    showItemDuration: Duration(milliseconds: 200),
-
-    // Animations starts at 0.05 visible
-    // item fraction in sight (default 0.025)
+    showItemInterval: Duration(milliseconds: 100),
+    showItemDuration: Duration(milliseconds: 300),
     visibleFraction: 0.05,
-
-    // Repeat the animation of the appearance
-    // when scrolling in the opposite direction (default false)
-    // To get the effect as in a showcase for ListView, set true
     reAnimateOnVisibility: false,
   );
+
   @override
   Widget build(BuildContext context) {
-    final column =
-        max(1, (min(MediaQuery.of(context).size.width, 1000) / 350).floor());
+    // Determine column count based on width
+    final width = MediaQuery.of(context).size.width;
+    final column = max(1, (min(width, 1200) / 300).floor());
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        SizedBox(
-          height: sectionFontSize(context),
-        ),
+        SizedBox(height: sectionFontSize(context)),
         Center(
           child: Container(
             padding: EdgeInsets.symmetric(horizontal: 24),
-            child: ConstrainedBox(
-              constraints: BoxConstraints(maxWidth: 1000),
-              child: FutureBuilder<List<Showcase>>(
-                  future: AppRepo.instance.getShowcases(),
-                  builder: (context, snapshot) {
-                    List<Showcase> showcases = snapshot.data ?? [];
-                    return LiveGrid.options(
-                      options: options,
-                      shrinkWrap: true,
-                      physics: NeverScrollableScrollPhysics(),
-                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                        childAspectRatio: 1.2,
-                        mainAxisSpacing: 16,
-                        crossAxisSpacing: 16,
-                        crossAxisCount: column,
+            constraints: BoxConstraints(maxWidth: 1200),
+            child: FutureBuilder<List<Showcase>>(
+              future: AppRepo.instance.getShowcases(),
+              builder: (context, snapshot) {
+                List<Showcase> showcases = snapshot.data ?? [];
+                if (showcases.isEmpty &&
+                    snapshot.connectionState == ConnectionState.done) {
+                  return Center(child: Text("No showcases found."));
+                }
+
+                return LiveGrid.options(
+                  options: options,
+                  shrinkWrap: true,
+                  physics: NeverScrollableScrollPhysics(),
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    childAspectRatio: 0.7, // Taller, poster-like ratio
+                    mainAxisSpacing: 32,
+                    crossAxisSpacing: 32,
+                    crossAxisCount: column,
+                  ),
+                  itemBuilder: (context, index, animation) {
+                    if (index >= showcases.length) {
+                      return Container(
+                        alignment: Alignment.center,
+                        decoration: BoxDecoration(
+                          color: Theme.of(context).cardColor,
+                          borderRadius: BorderRadius.circular(24),
+                        ),
+                        child: Text(
+                          "END",
+                          style: Theme.of(context).textTheme.bodySmall,
+                        ),
+                      );
+                    }
+                    final showcase = showcases[index];
+
+                    return FadeTransition(
+                      opacity: Tween<double>(
+                        begin: 0,
+                        end: 1,
+                      ).animate(animation),
+                      child: SlideTransition(
+                        position: Tween<Offset>(
+                          begin: Offset(0, 0.1),
+                          end: Offset.zero,
+                        ).animate(animation),
+                        child: ShowcaseItemView(
+                          showcase: showcase,
+                          index: index,
+                        ),
                       ),
-                      itemBuilder: (context, index, animation) {
-                        if (index >= showcases.length) {
-                          return Container(
-                            alignment: Alignment.center,
-                            color: Theme.of(context).canvasColor,
-                            child: Text(
-                              "404".toUpperCase(),
-                              style: Theme.of(context).textTheme.displaySmall,
-                            ),
-                          );
-                        }
-                        final showcase = showcases[index];
-
-                        final grid = index % column.toDouble();
-                        final mid = (column - 1) / 2.0;
-
-                        double x = grid < mid
-                            ? -0.3
-                            : grid > mid
-                                ? 0.3
-                                : 0;
-                        double y = grid == mid ? -0.1 : 0;
-                        return FadeTransition(
-                            opacity: Tween<double>(
-                              begin: 0,
-                              end: 1,
-                            ).animate(animation),
-                            // And slide transition
-                            child: SlideTransition(
-                                position: Tween<Offset>(
-                                  begin: Offset(x, y),
-                                  end: Offset.zero,
-                                ).animate(animation),
-                                // Paste you Widget
-                                child: ShowcaseItemView(showcase: showcase)));
-                      },
-                      itemCount: (showcases.length / column).ceil() * column,
                     );
-                  }),
+                  },
+                  itemCount: showcases.length,
+                );
+              },
             ),
           ),
         ),
-        SizedBox(
-          height: 48,
-        )
+        SizedBox(height: 64),
       ],
     );
   }
@@ -120,155 +118,217 @@ class ShowcaseItemView extends StatefulWidget {
   const ShowcaseItemView({
     Key? key,
     required this.showcase,
+    required this.index,
   }) : super(key: key);
 
   final Showcase showcase;
+  final int index;
 
   @override
   _ShowcaseItemViewState createState() => _ShowcaseItemViewState();
 }
 
-class _ShowcaseItemViewState extends State<ShowcaseItemView>
-    with TickerProviderStateMixin {
-  late final AnimationController controller;
-  late final Animation<double> animation;
-  @override
-  void initState() {
-    controller =
-        AnimationController(vsync: this, duration: Duration(milliseconds: 200));
-    animation = Tween<double>(begin: 0.0, end: 1.0).animate(controller);
-    super.initState();
-  }
+class _ShowcaseItemViewState extends State<ShowcaseItemView> {
+  bool isHovered = false;
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final color = showcasePalette[widget.index % showcasePalette.length];
+
     return MouseRegion(
-      onEnter: (event) {
-        controller.forward();
-      },
-      onExit: (event) {
-        controller.reverse();
-      },
-      child: InkWell(
-        onTap: widget.showcase.actions?.isNotEmpty != true
-            ? null
-            : () => controller.forward(),
-        child: buildCard(context),
-      ),
-    );
-  }
-
-  // bool isHover = false;
-
-  Widget buildCard(BuildContext context) {
-    return Card(
-      shape: RoundedRectangleBorder(
-          // side: BorderSide(color: Theme.of(context).hintColor.withOpacity(1)),
+      onEnter: (_) => setState(() => isHovered = true),
+      onExit: (_) => setState(() => isHovered = false),
+      child: AnimatedContainer(
+        duration: Duration(milliseconds: 200),
+        curve: Curves.easeOut,
+        transform: Matrix4.identity()..translate(0, isHovered ? -12.0 : 0),
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [color.withOpacity(0.9), color],
           ),
-      margin: EdgeInsets.zero,
-      child: AnimatedBuilder(
-        animation: animation,
-        builder: (context, child) => Stack(
-          children: [
-            Positioned(
-              left: -48 * animation.value,
-              right: -48 * animation.value,
-              top: -24 * animation.value,
-              child: AnimatedContainer(
-                duration: Duration(milliseconds: 200),
-                child: Image.network(
-                  widget.showcase.preview ?? "",
-                ),
-              ),
+          borderRadius: BorderRadius.circular(24),
+          boxShadow: [
+            BoxShadow(
+              color: color.withOpacity(0.4),
+              blurRadius: isHovered ? 24 : 12,
+              offset: Offset(0, isHovered ? 12 : 8),
             ),
-            Positioned(
-              top: 0,
-              bottom: 0,
-              left: 0,
-              right: 0,
-              child: Column(
-                children: [
-                  Expanded(
-                    child: Visibility(
-                      visible: animation.value > 0,
-                      child: Opacity(
-                        opacity: animation.value,
-                        child: BackdropFilter(
-                          filter: ImageFilter.blur(sigmaX: 1, sigmaY: 1),
-                          child: Container(
-                            color: Colors.white54,
-                            child: Center(
-                              child:
-                                  ShowcaseItemAction(showcase: widget.showcase),
-                            ),
+          ],
+        ),
+        clipBehavior: Clip.antiAlias,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            // Image Section - "Framed" look
+            Padding(
+              padding: const EdgeInsets.fromLTRB(12, 12, 12, 0),
+              child: AspectRatio(
+                aspectRatio: 1.4,
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(16),
+                  child: Stack(
+                    fit: StackFit.expand,
+                    children: [
+                      if (widget.showcase.preview != null)
+                        Image.network(
+                          widget.showcase.preview!,
+                          fit: BoxFit.cover,
+                          errorBuilder: (_, __, ___) =>
+                              Container(color: Colors.white24),
+                        )
+                      else
+                        Container(color: Colors.white24),
+
+                      // Inner shadow for depth
+                      Container(
+                        decoration: BoxDecoration(
+                          border: Border.all(
+                            color: Colors.white.withOpacity(0.2),
+                            width: 1,
+                          ),
+                          gradient: LinearGradient(
+                            begin: Alignment.topCenter,
+                            end: Alignment.bottomCenter,
+                            colors: [
+                              Colors.transparent,
+                              Colors.black.withOpacity(0.1),
+                            ],
                           ),
                         ),
                       ),
-                    ),
+                    ],
                   ),
-                  Card(
-                    margin: EdgeInsets.zero,
-                    shape: RoundedRectangleBorder(),
-                    child: Container(
-                      decoration: BoxDecoration(
-                          border: Border(top: BorderSide(color: Colors.white))),
-                      padding: EdgeInsets.fromLTRB(16, 16, 16, 16),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          Text(
-                            widget.showcase.title ?? "-",
-                            style: TextStyle(fontWeight: FontWeight.bold),
-                          ),
-                          Linkify(
-                            text: widget.showcase.description ?? "",
-                            onOpen: (link) async {
-                              if (await canLaunch(link.url)) {
-                                await launch(link.url);
-                              } else {}
-                            },
-                            style: Theme.of(context)
-                                .textTheme
-                                .titleSmall
-                                ?.copyWith(color: Theme.of(context).hintColor),
-                          ),
-                          SizedBox(
-                            height: 16,
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Wrap(
-                                spacing: 4,
-                                children: widget.showcase.tags
-                                        ?.map((e) => Chip(
-                                              backgroundColor: Colors.green,
-                                              padding: EdgeInsets.zero,
-                                              label: Text(e),
-                                            ))
-                                        .toList() ??
-                                    [],
-                              ),
-                              Wrap(
-                                spacing: 4,
-                                children: widget.showcase.platforms?.map((e) {
-                                      final code = int.tryParse(e.icon ?? "",
-                                              radix: 16) ??
-                                          0;
+                ),
+              ),
+            ),
 
-                                      return Icon(IconData(code,
-                                          fontFamily: e.family,
-                                          fontPackage: e.package));
-                                    }).toList() ??
-                                    [],
-                              ),
-                            ],
+            // Content Section
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Header: Title & Platforms
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Expanded(
+                          child: Text(
+                            widget.showcase.title ?? "Untitled",
+                            style: theme.textTheme.titleMedium?.copyWith(
+                              fontWeight: FontWeight.bold,
+                              height: 1.1,
+                              color: Colors.white,
+                              fontSize: 18,
+                            ),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
                           ),
-                        ],
+                        ),
+                        SizedBox(width: 8),
+                        if (widget.showcase.platforms != null)
+                          Row(
+                            children: widget.showcase.platforms!.take(2).map((
+                              e,
+                            ) {
+                              final code =
+                                  int.tryParse(e.icon ?? "", radix: 16) ?? 0;
+                              return Padding(
+                                padding: const EdgeInsets.only(left: 4),
+                                child: Icon(
+                                  IconData(
+                                    code,
+                                    fontFamily: e.family,
+                                    fontPackage: e.package,
+                                  ),
+                                  size: 16,
+                                  color: Colors.white.withOpacity(0.8),
+                                ),
+                              );
+                            }).toList(),
+                          ),
+                      ],
+                    ),
+
+                    SizedBox(height: 12),
+
+                    // Description
+                    Expanded(
+                      child: Linkify(
+                        text: widget.showcase.description ?? "",
+                        maxLines: 3,
+                        overflow: TextOverflow.ellipsis,
+                        onOpen: (link) async {
+                          if (await canLaunch(link.url)) {
+                            await launch(link.url);
+                          }
+                        },
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          color: Colors.white.withOpacity(0.85),
+                          height: 1.4,
+                        ),
+                        linkStyle: theme.textTheme.bodyMedium?.copyWith(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          decoration: TextDecoration.underline,
+                        ),
                       ),
                     ),
-                  ),
-                ],
+
+                    SizedBox(height: 16),
+
+                    // Tags as semi-transparent white pills
+                    if (widget.showcase.tags != null &&
+                        widget.showcase.tags!.isNotEmpty)
+                      SizedBox(
+                        height: 24,
+                        child: ListView(
+                          scrollDirection: Axis.horizontal,
+                          children: widget.showcase.tags!
+                              .map(
+                                (e) => Padding(
+                                  padding: const EdgeInsets.only(right: 6),
+                                  child: Container(
+                                    padding: EdgeInsets.symmetric(
+                                      horizontal: 10,
+                                      vertical: 4,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: Colors.white.withOpacity(0.2),
+                                      borderRadius: BorderRadius.circular(12),
+                                      border: Border.all(
+                                        color: Colors.white.withOpacity(0.1),
+                                      ),
+                                    ),
+                                    child: Text(
+                                      e.toUpperCase(),
+                                      style: TextStyle(
+                                        fontSize: 9,
+                                        fontWeight: FontWeight.w800,
+                                        color: Colors.white,
+                                        letterSpacing: 0.5,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              )
+                              .toList(),
+                        ),
+                      ),
+
+                    SizedBox(height: 20),
+
+                    // Actions
+                    ShowcaseItemAction(
+                      showcase: widget.showcase,
+                      accentColor: color,
+                    ),
+                  ],
+                ),
               ),
             ),
           ],
@@ -282,48 +342,71 @@ class ShowcaseItemAction extends StatelessWidget {
   const ShowcaseItemAction({
     Key? key,
     required this.showcase,
+    required this.accentColor,
   }) : super(key: key);
 
   final Showcase showcase;
+  final Color accentColor;
 
   @override
   Widget build(BuildContext context) {
-    return Wrap(
-      children: showcase.actions?.map((e) {
-            List<Color> colors =
-                e.colors?.map((e) => Color(int.parse(e, radix: 16))).toList() ??
-                    [defaultShowcaseButtonColor, defaultShowcaseButtonColor];
+    if (showcase.actions == null || showcase.actions!.isEmpty) {
+      return SizedBox.shrink();
+    }
 
-            if (colors.length == 1) {
-              colors = [...colors, colors.first];
-            }
-            return InkWell(
-              onTap: () => launchUrl(Uri.parse(e.url ?? "")),
-              child: Card(
-                clipBehavior: Clip.antiAlias,
-                shape: RoundedRectangleBorder(
-                    // side: BorderSide(color: color, width: 4),
-                    borderRadius: BorderRadius.circular(8)),
-                child: Container(
-                  decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                          colors: colors,
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight)),
-                  padding: EdgeInsets.symmetric(horizontal: 24, vertical: 8),
-                  child: Text(
-                    e.label?.toUpperCase() ?? "",
-                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                        color: colors.first.computeLuminance() > 0.3
-                            ? Colors.black
-                            : Colors.white,
-                        fontWeight: FontWeight.bold),
+    return SizedBox(
+      height: 40,
+      child: ListView.separated(
+        scrollDirection: Axis.horizontal,
+        itemCount: showcase.actions!.length,
+        separatorBuilder: (c, i) => SizedBox(width: 12),
+        itemBuilder: (context, index) {
+          final e = showcase.actions![index];
+
+          return InkWell(
+            onTap: () async {
+              if (await canLaunch(e.url ?? "")) {
+                await launch(e.url ?? "");
+              }
+            },
+            borderRadius: BorderRadius.circular(20),
+            child: Container(
+              padding: EdgeInsets.symmetric(horizontal: 20),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(20),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.1),
+                    blurRadius: 4,
+                    offset: Offset(0, 2),
                   ),
-                ),
+                ],
               ),
-            );
-          }).toList() ??
-          [],
+              alignment: Alignment.center,
+              child: Row(
+                children: [
+                  Text(
+                    e.label?.toUpperCase() ?? "VIEW",
+                    style: TextStyle(
+                      color: accentColor,
+                      fontWeight: FontWeight.w900,
+                      fontSize: 11,
+                      letterSpacing: 0.5,
+                    ),
+                  ),
+                  SizedBox(width: 4),
+                  Icon(
+                    Icons.arrow_forward_rounded,
+                    size: 12,
+                    color: accentColor,
+                  ),
+                ],
+              ),
+            ),
+          );
+        },
+      ),
     );
   }
 }
